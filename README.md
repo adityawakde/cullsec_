@@ -8,6 +8,15 @@ It is a local, private triage platform: upload scans from Nmap, Nessus, OpenVAS/
 
 Built by ADYREX.
 
+## About
+
+CullSec is a local, private vulnerability triage and management platform, built by ADYREX.
+
+Scanners find problems — they do not tell you what to fix first. CullSec takes output from Nmap, Nessus, OpenVAS/GVM, OWASP ZAP, Burp Suite, and Qualys, merges it into one ranked list, scores each finding with a transparent, deterministic formula, and tracks it on a board until it is fixed.
+
+It is built for security analysts, reviewers, and students who want to work through real scanner output in fix order — without sending any data anywhere. Everything runs locally, in one TypeScript + Node.js app with a SQLite database.
+
+
 ## Screenshots
 
 ### Overview — your risk, at a glance

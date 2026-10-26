@@ -49,15 +49,4 @@ CREATE TABLE IF NOT EXISTS findings (
   scanner TEXT NOT NULL,
   FOREIGN KEY (scan_id) REFERENCES scans(id)
 );
-CREATE TABLE IF NOT EXISTS settings (
-  account_id INTEGER NOT NULL,
-  provider TEXT NOT NULL,
-  site TEXT NOT NULL DEFAULT '',
-  project TEXT NOT NULL DEFAULT '',
-  repo TEXT NOT NULL DEFAULT '',
-  secret_hint TEXT NOT NULL DEFAULT '',
-  secret_hash TEXT NOT NULL DEFAULT '',
-  PRIMARY KEY (account_id, provider),
-  FOREIGN KEY (account_id) REFERENCES accounts(id)
-);
 `);

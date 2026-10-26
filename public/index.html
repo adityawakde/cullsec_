@@ -232,13 +232,24 @@
 <section class="tab" id="tab-triage"><h2>Triage</h2><p class="lede">Upload scan files. Only scan networks you own or have permission to test.</p>
 <div class="panel si-triage"><h3>New triage</h3><p>Six scanners live: Nmap, Nessus, OpenVAS/GVM, OWASP ZAP, Burp Suite and Qualys. Upload any mix — everything merges into one ranked list. In Kali: <code>nmap -sV -oX scan.xml 192.168.1.0/24</code></p>
 <label>Scan title <input type="text" id="scanName" placeholder="e.g. Home lab — first scan"></label>
+<p><strong>1 · Choose what you want to scan</strong> — tick one scanner, or several. Only the upload boxes for the scanners you tick will appear below.</p>
+<div class="scanner-picker">
+<label><input type="checkbox" id="pickNmap"> Nmap</label>
+<label><input type="checkbox" id="pickNessus"> Nessus</label>
+<label><input type="checkbox" id="pickOpenvas"> OpenVAS / GVM</label>
+<label><input type="checkbox" id="pickZap"> OWASP ZAP</label>
+<label><input type="checkbox" id="pickBurp"> Burp Suite</label>
+<label><input type="checkbox" id="pickQualys"> Qualys</label>
+</div>
+<p id="pickerHint" class="si-note">Tick a scanner above to see its upload box.</p>
+<p><strong>2 · Upload the scan files</strong> for the scanners you chose, then tap “Run triage →”.</p>
 <div class="upload-grid">
-<label class="upload-card"><b>Nmap XML</b><span class="choose">Choose file</span><input type="file" id="fileNmap" accept=".xml"><small>nmap -sV -oX scan.xml</small></label>
-<label class="upload-card"><b>Nessus CSV</b><span class="choose">Choose file</span><input type="file" id="fileNessus" accept=".csv"><small>Export from Nessus: Export → CSV</small></label>
-<label class="upload-card"><b>OpenVAS / GVM XML</b><span class="choose">Choose file</span><input type="file" id="fileOpenvas" accept=".xml"><small>GVM report download: XML format</small></label>
-<label class="upload-card"><b>OWASP ZAP JSON / XML</b><span class="choose">Choose file</span><input type="file" id="fileZap" accept=".json,.xml"><small>ZAP: Report → Generate report</small></label>
-<label class="upload-card"><b>Burp Suite XML</b><span class="choose">Choose file</span><input type="file" id="fileBurp" accept=".xml"><small>Burp: Issues → Save / export XML</small></label>
-<label class="upload-card"><b>Qualys CSV / XML</b><span class="choose">Choose file</span><input type="file" id="fileQualys" accept=".csv,.xml"><small>Qualys report: CSV or XML format</small></label>
+<label class="upload-card" data-card="Nmap"><b>Nmap XML</b><span class="choose">Choose file</span><input type="file" id="fileNmap" accept=".xml"><small>nmap -sV -oX scan.xml</small></label>
+<label class="upload-card" data-card="Nessus"><b>Nessus CSV</b><span class="choose">Choose file</span><input type="file" id="fileNessus" accept=".csv"><small>Export from Nessus: Export → CSV</small></label>
+<label class="upload-card" data-card="OpenVAS"><b>OpenVAS / GVM XML</b><span class="choose">Choose file</span><input type="file" id="fileOpenvas" accept=".xml"><small>GVM report download: XML format</small></label>
+<label class="upload-card" data-card="OWASP ZAP"><b>OWASP ZAP JSON / XML</b><span class="choose">Choose file</span><input type="file" id="fileZap" accept=".json,.xml"><small>ZAP: Report → Generate report</small></label>
+<label class="upload-card" data-card="Burp Suite"><b>Burp Suite XML</b><span class="choose">Choose file</span><input type="file" id="fileBurp" accept=".xml"><small>Burp: Issues → Save / export XML</small></label>
+<label class="upload-card" data-card="Qualys"><b>Qualys CSV / XML</b><span class="choose">Choose file</span><input type="file" id="fileQualys" accept=".csv,.xml"><small>Qualys report: CSV or XML format</small></label>
 </div>
 <div class="action-row"><button id="demoReviewer" type="button">Load reviewer demo (fictional)</button><button id="demoSample" type="button">Load my sample scan</button><button id="demoScanners" type="button">Load the new-scanners demo pack</button><button id="pasteToggle" type="button">Paste XML instead</button></div>
 <div id="pastePanel" hidden><label>Paste scan text (Nmap XML) <textarea id="pasteText" rows="6" placeholder="Paste Nmap XML here"></textarea></label><div class="action-row"><button id="pasteRun" type="button" class="primary">Run triage from pasted text</button></div></div>
@@ -246,7 +257,7 @@
 <p id="triageStatus"></p></div>
 <div class="panel"><h3>Saved scans</h3><div id="savedScansList"></div><div id="savedScansEmpty" class="si-empty"><h3>No saved scans yet</h3><p>Run your first triage above — try “Load my sample scan” — and it will be saved here under your account.</p></div></div>
 <div class="panel"><h3>Score breakdown</h3><p>Scoring is deterministic and rule-based, not AI. Tap “Why this score?” on any finding to see its parts.</p><div id="aiPanel" class="ai-panel">Select a finding to see its breakdown.</div></div>
-<div class="panel"><h3>Findings explorer</h3>
+<div class="panel" id="findingsPanel"><h3>Findings explorer</h3>
 <div class="filter-bar">
 <label>Search <input type="text" id="searchBox" placeholder="host, service, or issue"></label>
 <label>Severity <select id="sevFilter"><option value="">All</option><option>Critical</option><option>High</option><option>Medium</option><option>Low</option><option>Info</option></select></label>

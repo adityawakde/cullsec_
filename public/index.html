@@ -143,7 +143,7 @@
 
   <section class="so-walkthrough">
     <div class="so-walk-head"><h2>Walkthrough — see CullSec work, in 2 minutes</h2><span class="so-fictional">FICTIONAL DATA ONLY</span></div>
-    <p>Read this without signing in. Every host below is fictional lab data (10.0.5.x) — nothing here is a real scan, and nothing is saved. To try it hands-on, sign in and load the reviewer demo in Settings.</p>
+    <p>Read this without signing in. Every host below is fictional lab data (10.0.5.x) — nothing here is a real scan, and nothing is saved. To try it hands-on, sign in and load the reviewer demo in Triage.</p>
     <button id="walkthroughBtn" type="button">Show the 2-minute walkthrough</button>
     <div id="walkthroughPanel" hidden>
       <div class="walk-steps">
@@ -153,7 +153,7 @@
         <article class="walk-step"><span class="walk-num">04</span><h3>Prove the fix</h3><p>Re-scan and compare before with after. The diff is the proof: what is new, what was resolved, and what is still open.</p><p class="walk-example">Before 7 findings → After 3 · 0 new · 4 resolved · 3 still open</p></article>
         <article class="walk-step"><span class="walk-num">05</span><h3>Export the proof</h3><p>Download the report as Markdown, CSV or JSON, ending with “Built by ADYREX”.</p><p class="walk-example">report.md · report.csv · report.json</p></article>
       </div>
-      <p class="walk-foot">Total time: 2 minutes · Nothing here is saved · Hands-on version: sign in → Settings → Load reviewer demo (fictional).</p>
+      <p class="walk-foot">Total time: 2 minutes · Nothing here is saved · Hands-on version: sign in → Triage → Load reviewer demo (fictional).</p>
     </div>
   </section>
 
@@ -178,7 +178,7 @@
       <h2>Everything a vulnerability platform should do — in one place</h2>
       <p class="so-plat-intro">CullSec covers the full lifecycle: ingest, scoring, deduplication, workflow, analytics, comparison and reporting. Built by ADYREX as a showcase of modern security engineering.</p>
       <div class="so-feature-grid">
-        <article class="so-feature" style="border-top-color:#2f9e6e"><span class="so-feat-icon green">◎</span><h3>Contextual scoring v2 — deterministic, not AI</h3><p>Every finding is scored 0–100 from service base + known-bad version + scanner severity + exposure + asset criticality + host context. Tap any score to see the full breakdown. No black box, no fake AI label — and an AI slot in Settings for when you connect your own model key.</p></article>
+        <article class="so-feature" style="border-top-color:#2f9e6e"><span class="so-feat-icon green">◎</span><h3>Contextual scoring v2 — deterministic, not AI</h3><p>Every finding is scored 0–100 from service base + known-bad version + scanner severity + exposure + asset criticality + host context. Tap any score to see the full breakdown. No black box, no fake AI label.</p></article>
         <article class="so-feature" style="border-top-color:#3b82c4"><span class="so-feat-icon blue">⬡</span><h3>Multi-scanner ingest — 6 scanners</h3><p>Nmap, Nessus, OpenVAS/GVM, OWASP ZAP, Burp Suite and Qualys are merged into one ranked list. Duplicate host + port findings across scanners are deduplicated and merged automatically, keeping the named issue from whichever scanner found it.</p></article>
         <article class="so-feature" style="border-top-color:#c0392b"><span class="so-feat-icon red">▤</span><h3>Executive dashboard</h3><p>Portfolio-level view across every saved scan: severity mix, remediation progress, riskiest hosts, most common services and scan-over-scan trend.</p></article>
         <article class="so-feature" style="border-top-color:#c9922a"><span class="so-feat-icon amber">✓</span><h3>Remediation workflow</h3><p>Each finding moves through Open → In progress → Fixed, or is marked Risk accepted / False positive. Progress is tracked per scan and across the whole account.</p></article>
@@ -215,14 +215,14 @@
 <button class="tabbtn" data-tab="board">Board</button>
 <button class="tabbtn" data-tab="compare">Compare</button>
 <button class="tabbtn" data-tab="platform">Platform</button>
-<button class="tabbtn" data-tab="settings">Settings</button>
 </nav>
 <main>
 <section class="tab active" id="tab-overview">
 <div class="si-overview-head">
 <p class="si-kicker">OVERVIEW</p>
-<h2>Your risk, at a glance</h2>
-<p class="lede">Every saved scan, ranked and tracked. Start in Triage, work the Board, prove it in Compare.</p>
+<h2>🛡 Your risk, at a glance</h2>
+<div id="threatLevel" class="threat-chip">Threat level: —</div>
+<p class="lede">Your attack surface, in one place: exposed services, cleartext protocols and known-bad versions, ranked by risk. Start in Triage, work the Board, prove it in Compare.</p>
 <div class="overview-actions"><button type="button" class="primary goto-tab" data-goto="triage">Run a triage →</button><button type="button" class="goto-tab" data-goto="board">Open board</button><button type="button" class="goto-tab" data-goto="compare">Compare scans</button></div>
 </div>
 <div id="overviewEmpty" class="si-empty"><h3>Your overview is empty — for now</h3><p>Run your first triage and this page becomes your dashboard: severity mix, remediation progress, riskiest hosts and trend.</p><div class="overview-actions"><button type="button" class="primary goto-tab" data-goto="triage">Go to Triage →</button></div></div>
@@ -277,15 +277,7 @@
 
 <section class="tab" id="tab-platform"><div class="si-platform"><p class="so-eyebrow">&lt;/&gt; CULLSEC &nbsp;·&nbsp; CYBER SECURITY PLATFORM</p><div id="platformNav" class="so-plat-nav"></div><p class="so-now">NOW VIEWING &nbsp;·&nbsp; <span id="siNowLabel">FEATURES</span></p><div id="platformContent"></div></div></section>
 
-<section class="tab" id="tab-settings"><p class="si-kicker">SETTINGS</p><h2>Settings — only what works</h2><p class="lede">Your account, appearance and demo data. CullSec sends nothing anywhere, and stores everything in one local SQLite file.</p>
-<div class="si-settings-grid">
-<div class="panel"><h3>Your account</h3><p>Signed in as <strong id="settingsAccount">your account</strong>. Use Edit profile in the top bar to change your display name, or Sign out there.</p><p>Your scans, findings and board status are saved under your account, and waiting when you return.</p></div>
-<div class="panel"><h3>Appearance</h3><p>Light or Dark is on the start page, before you sign in. Your choice is saved on this device, applies to the dashboard too, and a first visit follows your system setting. To change it, sign out, change it on the start page, and sign back in.</p></div>
-<div class="panel"><h3>Security &amp; privacy</h3><p>Passwords are hashed server-side with scrypt and a per-account salt, never stored in plain text. Scan data lives in data/cullsec.db on this machine. This app makes no outbound call with your scan data.</p></div>
-<div class="panel"><h3>Reviewer demo data (fictional)</h3><p>Load two fictional DEMO scans — “before fixes” (7 findings) and “after fixes” (3 findings) — so a reviewer can run the full story (rank → board → compare) in two minutes without any real network. Hosts are 10.0.5.x lab fiction. Loading twice does nothing — the demo is created once per account.</p><button id="reviewerDemoBtn" type="button" class="primary">Load reviewer demo (fictional)</button></div>
-<div class="panel"><h3>Your data</h3><p>Delete a single scan in Triage → Saved scans. To reset everything local, stop the server and delete data/cullsec.db, then start it again.</p></div>
-</div>
-</section>
+
 </main></div>
 <footer id="globalFooter" hidden>CullSec · Built by ADYREX</footer>
 <script src="app.js"></script>

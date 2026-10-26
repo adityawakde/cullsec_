@@ -348,3 +348,28 @@ html[data-theme="dark"] .si-kicker{color:#4fc08a}
 .si-settings-grid .panel{margin:0}
 .si-note{color:var(--muted);font-size:13px;line-height:1.55}
 @media (max-width:900px){.si-settings-grid{grid-template-columns:1fr}}
+
+/* --- Redesigned Overview, walkthrough and polish (no animations) --- */
+.si-overview-head{border:1px solid var(--border);border-radius:22px;padding:26px 28px;margin:0 0 18px;background:linear-gradient(135deg,var(--surface) 0%,var(--surface-2) 55%,#dcefe3 130%);box-shadow:var(--shadow)}
+[data-theme="dark"] .si-overview-head{background:linear-gradient(135deg,var(--surface) 0%,var(--surface-2) 60%,#1e3d2b 130%)}
+.si-overview-head h2{margin:6px 0 8px;font-size:30px;letter-spacing:-.02em}
+.si-overview-head .lede{margin:0 0 16px;max-width:640px}
+.overview-actions{display:flex;gap:10px;flex-wrap:wrap}
+.overview-actions button{padding:10px 16px;border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:999px;font-weight:700}
+.overview-actions button.primary{background:var(--accent-dark);border-color:var(--accent-dark);color:#fff}
+.overview-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0}
+.overview-grid .panel{margin:0}
+#overviewDashboard .panel{border-radius:18px}
+#overviewDashboard .stat{border-radius:16px}
+.walk-steps{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-top:18px}
+.walk-step{border:1px solid var(--border);background:var(--surface-2);border-radius:16px;padding:18px}
+.walk-step h3{margin:8px 0;font-size:17px}
+.walk-step p{font-size:14px;line-height:1.6}
+.walk-num{display:inline-block;background:var(--accent-dark);color:#fff;font-weight:800;font-size:13px;letter-spacing:.05em;padding:5px 10px;border-radius:999px}
+.walk-example{font-family:ui-monospace,Menlo,monospace;font-size:12px;background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:9px}
+.walk-foot{margin-top:16px;font-weight:700}
+.panel{border-radius:18px}
+.finding{border-radius:14px}
+.so-feature{border-radius:16px}
+@media (max-width:900px){.walk-steps{grid-template-columns:1fr 1fr}.overview-grid{grid-template-columns:1fr}}
+@media (max-width:600px){.walk-steps{grid-template-columns:1fr}.si-overview-head{padding:20px}}

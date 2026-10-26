@@ -10,10 +10,10 @@ CullSec is not a scanner. It reads scan output, deduplicates findings, scores th
 - Six scanner imports, server-side: Nmap XML, Nessus CSV, OpenVAS/GVM XML, OWASP ZAP JSON/XML, Burp Suite XML, Qualys CSV/XML, merged into one ranked triage with cross-scanner dedupe.
 - Server-side contextual scoring v2, deterministic, NOT AI: service base + known-bad version + scanner severity + exposure + asset criticality + host context, capped at 100, with the full breakdown stored per finding and shown under "Why this score?".
 - Dashboard, findings explorer, remediation board (Open / In progress / Fixed / Risk accepted / False positive), scan-to-scan Compare, host inventory, and per-scan summaries.
-- Reports and exports: Markdown, CSV and JSON reports, plus a portfolio pack (architecture, README, CV blurb, timed demo script). Nothing is sent anywhere by this app.
+- Reports and exports: Markdown, CSV and JSON reports. Nothing is sent anywhere by this app.
 - Exports in Markdown, CSV, and JSON.
 - Fictional demo packs, clearly labelled fictional, including a before/after pack (7 findings to 3) and a new-scanners demo pack.
-- Platform sections in a top line, plus a Portfolio pack download.
+- Platform sections in a top line.
 
 ## Requirements
 

@@ -6,7 +6,7 @@ function setTheme(t){ document.documentElement.setAttribute("data-theme", t); lo
 $("themeLight").onclick = () => setTheme("light"); $("themeDark").onclick = () => setTheme("dark");
 function headers(){ return { "Content-Type": "application/json", Authorization: `Bearer ${token}` }; }
 async function api(path, opts = {}){ const r = await fetch(path, { ...opts, headers: headers() }); const j = await r.json().catch(() => ({})); if (!r.ok) throw new Error(j.error || "Request failed"); return j; }
-function setSignedInUser(acct){ if (!acct) return; localStorage.setItem("cullsec-account", JSON.stringify(acct)); $("siName").textContent = acct.name || ""; $("siEmail").textContent = acct.email || ""; if ($("profileName")) $("profileName").value = acct.name || ""; }
+function setSignedInUser(acct){ if (!acct) return; localStorage.setItem("cullsec-account", JSON.stringify(acct)); $("siName").textContent = acct.name || ""; $("siEmail").textContent = acct.email || ""; if ($("profileName")) $("profileName").value = acct.name || ""; const sa = $("settingsAccount"); if (sa) sa.textContent = (acct.name || "") + " (" + (acct.email || "") + ")"; }
 function showSignedIn(show){
   $("signedOut").hidden = show; $("signedIn").hidden = !show; $("signOut").hidden = !show; $("editProfile").hidden = !show; $("signedInUser").hidden = !show; if ($("globalFooter")) $("globalFooter").hidden = !show; window.scrollTo(0, 0);
   if (show) { try { const a = JSON.parse(localStorage.getItem("cullsec-account") || "null"); if (a) setSignedInUser(a); } catch (e) {} loadDashboard(); }
@@ -78,7 +78,7 @@ function renderFindings(list){
   if (sort === "score-desc") out.sort((a, b) => b.score - a.score); if (sort === "score-asc") out.sort((a, b) => a.score - b.score); if (sort === "host") out.sort((a, b) => a.host.localeCompare(b.host));
   $("findingsList").innerHTML = out.map((f) => `<div class="finding sev-${f.severity}"><div class="finding-head"><span><span class="chip ${sevClass(f.severity)}">${esc(f.severity)}</span> <span class="chip chip-status">${esc(f.status)}</span></span><span class="score-badge">${f.score}</span></div><div class="finding-title">${esc(f.host)}:${f.port} ${esc(f.service)}</div><div class="finding-meta">${esc(f.title || "")}${f.version ? ` · ${esc(f.version)}` : ""}${f.scanner ? ` · ${esc(f.scanner)}` : ""}</div><button type="button" onclick="showWhy(${f.id})">Why this score?</button></div>`).join("") || "<p>No findings match.</p>";
 }
-window.showWhy = (id) => { const f = currentFindings.find((x) => x.id === id); if (!f) return; const b = f.breakdown; const part = (label, v) => `<div><b>${v}</b><span>${label}</span></div>`; $("aiPanel").innerHTML = `<p><strong>Model not connected.</strong> Deterministic breakdown for ${esc(f.host)}:${f.port}.</p><div class="breakdown-grid">${part("Base", b.base)}${part("Risky service", b.riskyService)}${part("Version", b.version)}${part("Scanner severity", b.scannerSeverity)}${part("Exposure", b.exposure)}${part("Asset criticality", b.assetCriticality)}${part("Host context", b.hostContext)}${part("Total", b.total)}</div><p>${esc((b.reasons || []).join("; "))}</p>`; };
+window.showWhy = (id) => { const f = currentFindings.find((x) => x.id === id); if (!f) return; const b = f.breakdown; const part = (label, v) => `<div><b>${v}</b><span>${label}</span></div>`; $("aiPanel").innerHTML = `<p><strong>Deterministic breakdown for ${esc(f.host)}:${f.port}.</p><div class="breakdown-grid">${part("Base", b.base)}${part("Risky service", b.riskyService)}${part("Version", b.version)}${part("Scanner severity", b.scannerSeverity)}${part("Exposure", b.exposure)}${part("Asset criticality", b.assetCriticality)}${part("Host context", b.hostContext)}${part("Total", b.total)}</div><p>${esc((b.reasons || []).join("; "))}</p>`; };
 ["searchBox","sevFilter","statusFilter","sortSelect"].forEach((id) => $(id).addEventListener("input", () => renderFindings(currentFindings)));
 async function readFile(id){ const el = $(id); if (!el.files || !el.files[0]) return null; return await el.files[0].text(); }
 $("runTriage").onclick = async () => {
@@ -96,37 +96,23 @@ $("demoSample").onclick = () => loadDemo("before"); $("demoScanners").onclick = 
 $("pasteToggle").onclick = () => { $("pastePanel").hidden = !$("pastePanel").hidden; };
 $("pasteRun").onclick = async () => { const content = $("pasteText").value.trim(); if (!content) { $("triageStatus").textContent = "Paste scan text first."; return; } const r = await api("/api/scans", { method: "POST", body: JSON.stringify({ name: $("scanName").value || "Pasted scan", files: [{ scanner: "Nmap", content }] }) }); currentScanId = r.scanId; currentFindings = r.findings; $("triageStatus").textContent = `Triage complete: ${r.findings.length} findings.`; renderFindings(currentFindings); loadDashboard(); };
 $("runCompare").onclick = async () => { if (!$("compareA").value || !$("compareB").value || $("compareA").value === $("compareB").value) { $("compareOut").innerHTML = "<p>Pick two different scans to compare.</p>"; return; } const r = await api(`/api/compare?a=${$("compareA").value}&b=${$("compareB").value}`); const list = (arr) => arr.map((f) => `<li>${esc(f.host)}:${f.port} ${esc(f.service)} — ${esc(f.severity)} ${f.score}</li>`).join("") || "<li>None.</li>"; $("compareOut").innerHTML = `<div class="compare-grid"><div class="compare-card"><b>${r.new.length}</b>New<ul>${list(r.new)}</ul></div><div class="compare-card"><b>${r.resolved.length}</b>Resolved<ul>${list(r.resolved)}</ul></div><div class="compare-card"><b>${r.stillOpen.length}</b>Still open<ul>${list(r.stillOpen)}</ul></div></div>`; };
-$("downloadJira").onclick = () => { const csv = "Summary,Host,Port,Severity,Score\n" + currentFindings.map((f) => `"${f.title}",${f.host},${f.port},${f.severity},${f.score}`).join("\n"); download("jira-import.csv", csv, "text/csv"); };
-$("downloadGithub").onclick = () => { const txt = currentFindings.map((f) => `## ${f.title} — ${f.host}:${f.port}\nSeverity: ${f.severity}, Score: ${f.score}, Status: ${f.status}\n`).join("\n"); download("github-issues.md", txt, "text/markdown"); };
-$("previewAlerts").onclick = () => { const payload = { text: `CullSec alert: ${currentFindings.filter((f) => f.severity === "Critical" || f.severity === "High").length} Critical/High findings`, findings: currentFindings.slice(0, 5) }; $("alertPreview").textContent = "Slack / Teams payload preview (generator only, not sent):\n" + JSON.stringify(payload, null, 2); };
 function download(name, content, type){ const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([content], { type })); a.download = name; a.click(); }
 async function exportFile(fmt){ if (!currentScanId) return; const r = await fetch(`/api/export/${currentScanId}?format=${fmt}`, { headers: { Authorization: `Bearer ${token}` } }); const blob = await r.blob(); const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = `report.${fmt === "md" ? "md" : fmt}`; a.click(); }
 $("exportMd").onclick = () => exportFile("md"); $("exportCsv").onclick = () => exportFile("csv"); $("exportJson").onclick = () => exportFile("json");
 $("portfolioBtn").onclick = async () => { const r = await fetch("/api/portfolio", { headers: { Authorization: `Bearer ${token}` } }); const blob = await r.blob(); const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "portfolio-pack.md"; a.click(); };
-async function saveOne(provider, payload, label){ await api("/api/settings", { method: "POST", body: JSON.stringify({ [provider]: payload }) }); const s = await api("/api/settings"); $("settingsStatus").textContent = `${label} saved. Only masked hints are returned. Nothing was sent anywhere.`; $("settingsSaved").innerHTML = `<pre>${esc(JSON.stringify(s.settings, null, 2))}</pre>`; }
-$("saveJira").onclick = () => saveOne("jira", { site: $("setJiraSite").value, project: $("setJiraProject").value, secret: $("setJiraSecret").value }, "Jira settings");
-$("saveGithub").onclick = () => saveOne("github", { repo: $("setGithubRepo").value, secret: $("setGithubSecret").value }, "GitHub settings");
-$("saveSlack").onclick = () => saveOne("slack", { site: $("setSlackChannel").value, secret: $("setSlack").value }, "Slack settings");
-$("saveTeams").onclick = () => saveOne("teams", { site: $("setTeamsChannel").value, secret: $("setTeams").value }, "Teams settings");
-$("saveModel").onclick = () => saveOne("model", { site: $("setModelName").value, secret: $("setModel").value }, "AI model settings");
-$("disconnectJira").onclick = () => saveOne("jira", { site: "", project: "", secret: "" }, "Jira disconnected");
-$("disconnectGithub").onclick = () => saveOne("github", { repo: "", secret: "" }, "GitHub disconnected");
-$("disconnectSlack").onclick = () => saveOne("slack", { site: "", secret: "" }, "Slack disconnected");
-$("disconnectTeams").onclick = () => saveOne("teams", { site: "", secret: "" }, "Teams disconnected");
-$("disconnectModel").onclick = () => saveOne("model", { site: "", secret: "" }, "AI model disconnected");
 const PLATFORM = {
   Features: "Six scanner imports, ranked triage, dashboard, board, compare, exports, and settings.",
   Workflow: "Upload -> triage -> review breakdown -> move on board -> compare -> export.",
   "Why CullSec": "One ranked list instead of six separate reports, with transparent scoring.",
-  Ecosystem: "Nmap, Nessus, OpenVAS, ZAP, Burp, and Qualys imports; Jira/GitHub/Slack/Teams generators.",
+  Ecosystem: "Nmap, Nessus, OpenVAS, ZAP, Burp, and Qualys imports.",
   Methodology: "Contextual scoring v2: service base + version + scanner severity + exposure + asset criticality + host context, capped at 100, deterministic, not AI.",
   Portfolio: "Architecture, README text, CV blurb, timed 2-minute demo script, downloadable as one Markdown file — use the Download portfolio pack button in Triage.",
   "Get Started": "Sign in, upload a scan, review the ranked list, and export a report.",
-  Security: "Passwords are hashed server-side. Secrets are hashed with only a masked hint returned. Nothing is sent to external services by this app.",
-  Roadmap: "Now live: six imports, board, compare, exports. Next: live integrations with your tokens, model connection. Later: scheduled scans.",
+  Security: "Passwords are hashed server-side. Nothing is sent to external services by this app.",
+  Roadmap: "Now live: six imports, board, compare, exports. Later: scheduled scans, more formats, richer host views.",
   Glossary: "Triage: ranking findings by risk. Dedupe: removing duplicate findings for the same host, port, and service.",
-  Changelog: "v1: local TypeScript fullstack rebuild with SQLite, six imports, scoring v2, board, compare, exports, settings, demo packs, and portfolio pack.",
-  FAQ: "Is scoring AI? No, it is deterministic and rule-based. Are tickets live? No, generators until tokens are connected. Is data sent anywhere? No."
+  Changelog: "v1: local TypeScript fullstack rebuild with SQLite, six imports, scoring v2, board, compare, exports, demo packs, and portfolio pack.",
+  FAQ: "Is scoring AI? No, it is deterministic and rule-based. Is data sent anywhere? No."
 };
 const PLATFORM_PAGES = {
   Workflow: `<p class="so-plat-kicker blue">PLATFORM</p><h2>From scan file to fix list, in five steps</h2><p class="so-plat-intro">No new scanner, no agent, no extra service. CullSec triages what your scanners already found.</p><div class="so-feature-grid">
@@ -135,12 +121,12 @@ const PLATFORM_PAGES = {
 <article class="so-feature"><h3>3 · Review the breakdown</h3><p>Tap “Why this score?” on any finding to see base, risky service, version, scanner severity, exposure, asset criticality and host context, factor by factor.</p></article>
 <article class="so-feature"><h3>4 · Fix on the board</h3><p>Move findings Open → In progress → Fixed, or mark Risk accepted / False positive. Status is saved under your account, per scan and across scans.</p></article>
 <article class="so-feature"><h3>5 · Compare &amp; export</h3><p>Re-scan, compare before and after, and download Markdown, CSV or JSON. The diff is the proof that a fix worked.</p></article>
-<article class="so-feature"><h3>Then tickets &amp; alerts</h3><p>Generate a Jira import CSV, a GitHub issues pack, or Slack / Teams payload previews from the same scan. Generators only — nothing is created or sent.</p></article></div>`,
+</div>`,
   "Why CullSec": `<p class="so-plat-kicker blue">PLATFORM</p><h2>One ranked list, instead of six separate reports</h2><p class="so-plat-intro">Scanners are good at finding. They are bad at telling you what to fix first. CullSec adds the ranking, the explanation and the workflow.</p><div class="so-feature-grid">
 <article class="so-feature"><h3>Fix order is reading order</h3><p>Cleartext Telnet, exposed databases and known-bad versions float to the top. Lower-risk findings sit below them, not beside them as equals.</p></article>
 <article class="so-feature"><h3>Transparent, not a black box</h3><p>Every score shows its parts. If you disagree with a rank, you can see exactly which factor pushed it up — and fix that thing first.</p></article>
 <article class="so-feature"><h3>Local, saved, portable</h3><p>Your account, scans and progress live in one local SQLite file. Reports download as Markdown, CSV or JSON, ending with “Built by ADYREX”.</p></article>
-<article class="so-feature"><h3>What CullSec is not</h3><p>Not AI scoring — scoring is deterministic and rule-based. Not live posting — tickets and alerts are generators until you connect tokens. Not a scanner — it triages scanner output. Not a public link — this build is private to your account.</p></article></div>`,
+<article class="so-feature"><h3>What CullSec is not</h3><p>Not AI scoring — scoring is deterministic and rule-based. Not a scanner — it triages scanner output. Not a public link — this build is private to your account.</p></article></div>`,
   Ecosystem: `<p class="so-plat-kicker blue">PLATFORM</p><h2>Six scanners in, one ranked list out</h2><p class="so-plat-intro">Upload any mix. Cross-scanner dedupe is by host, port and service, keeping the named issue from whichever scanner found it.</p><div class="panel"><h3>Scanner imports</h3><div class="row-list">
 <div class="row"><strong>Nmap</strong><span class="meta">XML · nmap -sV -oX scan.xml</span></div>
 <div class="row"><strong>Nessus</strong><span class="meta">CSV · Export → CSV</span></div>
@@ -148,11 +134,7 @@ const PLATFORM_PAGES = {
 <div class="row"><strong>OWASP ZAP</strong><span class="meta">JSON / XML · Report → Generate report</span></div>
 <div class="row"><strong>Burp Suite</strong><span class="meta">XML · Issues → Save / export XML</span></div>
 <div class="row"><strong>Qualys</strong><span class="meta">CSV / XML · Qualys report, CSV or XML format</span></div></div></div>
-<div class="panel"><h3>Ticket &amp; alert generators — live needs your token</h3><div class="row-list">
-<div class="row"><strong>Jira import CSV</strong><span class="meta">Generator · per scan</span></div>
-<div class="row"><strong>GitHub issues pack</strong><span class="meta">Generator · Markdown, per finding</span></div>
-<div class="row"><strong>Slack webhook payload</strong><span class="meta">Generator · preview only, not sent</span></div>
-<div class="row"><strong>Microsoft Teams payload</strong><span class="meta">Generator · MessageCard preview only, not sent</span></div></div></div>`,
+`,
   Methodology: `<p class="so-plat-kicker blue">PLATFORM</p><h2>Contextual scoring v2 — deterministic, not AI</h2><p class="so-plat-intro">Score = base 10 + risky service + known-bad version + scanner severity + exposure + asset criticality + host context, capped at 100. The full breakdown is stored per finding.</p><div class="panel"><h3>The eight parts</h3><div class="row-list">
 <div class="row"><strong>Base</strong><span class="meta">10</span></div>
 <div class="row"><strong>Risky service (by port)</strong><span class="meta">Telnet 70 · Redis / MongoDB 60 · SMB / MSSQL / MySQL / PostgreSQL / VNC 50 · FTP 40</span></div>
@@ -167,12 +149,12 @@ const PLATFORM_PAGES = {
 <div class="row"><strong>High</strong><span class="meta">65–84</span></div>
 <div class="row"><strong>Medium</strong><span class="meta">40–64</span></div>
 <div class="row"><strong>Low</strong><span class="meta">15–39</span></div>
-<div class="row"><strong>Info</strong><span class="meta">0–14</span></div></div><p>Dedupe: findings for the same host, port and service merge into one. The AI panel always says “Model not connected” until you add your own model key in Settings — it never claims AI scoring.</p></div>`,
+<div class="row"><strong>Info</strong><span class="meta">0–14</span></div></div><p>Dedupe: findings for the same host, port and service merge into one. Scoring is never claimed as AI — it is the formula above, every time.</p></div>`,
   Portfolio: `<p class="so-plat-kicker blue">PLATFORM</p><h2>Portfolio pack — one Markdown download</h2><p class="so-plat-intro">The same pack reviewers get: architecture, README text, CV blurb and a timed demo script, in one file.</p><div class="so-feature-grid">
 <article class="so-feature"><h3>Architecture</h3><p>Local TypeScript fullstack app: static HTML/CSS/JavaScript frontend served by a Node.js TypeScript backend, with a file-backed SQLite database. No data is sent to external services by this app.</p></article>
 <article class="so-feature"><h3>README (short)</h3><p>CullSec turns raw scanner output into a prioritised fix list. Upload six scanner formats, get one ranked triage, move findings on a board, compare scans, and export Markdown, CSV or JSON.</p></article>
 <article class="so-feature"><h3>CV blurb (copy-ready)</h3><p>Built CullSec, a local vulnerability triage platform: six scanner imports merged into one ranked triage, deterministic contextual scoring with per-finding breakdowns, remediation board and scan comparison, and Markdown/CSV/JSON exports, using TypeScript, Node.js, and SQLite.</p></article>
-<article class="so-feature"><h3>Timed 2-minute demo script</h3><p>0:00 Sign in and show the dashboard. 0:20 Upload a scan, show the ranked list and a “Why this score?” breakdown. 0:50 Move a finding on the Board to Fixed. 1:10 Compare before and after scans (7 findings to 3). 1:30 Show a ticket generator preview and an export. 1:50 Close: local, deterministic scoring, no external data sent.</p></article></div><div class="action-row"><button id="portfolioBtn2" type="button" class="primary">Download portfolio pack</button></div>`,
+<article class="so-feature"><h3>Timed 2-minute demo script</h3><p>0:00 Sign in and show the dashboard. 0:20 Upload a scan, show the ranked list and a “Why this score?” breakdown. 0:50 Move a finding on the Board to Fixed. 1:10 Compare before and after scans (7 findings to 3). 1:30 Download a Markdown report and the portfolio pack. 1:50 Close: local, deterministic scoring, no external data sent.</p></article></div><div class="action-row"><button id="portfolioBtn2" type="button" class="primary">Download portfolio pack</button></div>`,
   "Get Started": `<p class="so-plat-kicker blue">PLATFORM</p><h2>Get started in five minutes</h2><p class="so-plat-intro">No separate sign-up step. The first sign-in saves your account; the same email and password bring it back.</p><div class="so-feature-grid">
 <article class="so-feature"><h3>1 · Sign in</h3><p>Enter a name (first time only), email and a strong password: 8+ characters with a lowercase letter, an uppercase letter, a number and a symbol.</p></article>
 <article class="so-feature"><h3>2 · Try the sample</h3><p>In Triage, tap “Load my sample scan” to see a ranked list instantly, with no scan file needed.</p></article>
@@ -180,10 +162,10 @@ const PLATFORM_PAGES = {
 <article class="so-feature"><h3>4 · Work the board, then compare</h3><p>Move findings to Fixed, re-scan, compare the two scans, and download the report as evidence.</p></article></div><p>Run locally: npm install, then npm run dev, then open http://localhost:3000.</p>`,
   Security: `<p class="so-plat-kicker blue">PLATFORM</p><h2>Security &amp; privacy — what is stored, and what is not sent</h2><div class="so-feature-grid">
 <article class="so-feature"><h3>Passwords, hashed</h3><p>Passwords are hashed server-side with scrypt and a per-account salt. They are never stored in plaintext, and never shown back.</p></article>
-<article class="so-feature"><h3>Secrets, hashed with a hint only</h3><p>Integration and model secrets saved in Settings are hashed server-side. Only a masked last-4 hint is returned. Nothing is posted anywhere by this build.</p></article>
+<article class="so-feature"><h3>No external calls</h3><p>This app does not connect to any external service with your scan data. Everything you see here runs locally, on this machine.</p></article>
 <article class="so-feature"><h3>Your data stays local</h3><p>Accounts, scans, findings and workflow status live in a local SQLite file (data/cullsec.db). This app makes no outbound call with your scan data.</p></article>
 <article class="so-feature"><h3>Safe-use rule</h3><p>Scan only systems you own or are authorised to test. Demo data is fictional lab hosts (10.0.5.x) and is clearly labelled fictional.</p></article></div>`,
-  Roadmap: `<p class="so-plat-kicker blue">PLATFORM</p><h2>Roadmap — live now, next, later</h2><div class="panel"><h3>Live now</h3><p>Six scanner imports, merged ranked triage, contextual scoring v2 with breakdowns, executive dashboard, findings explorer, remediation board, scan comparison, Markdown / CSV / JSON exports, ticket &amp; alert generators, Settings with hashed secrets, reviewer demo and portfolio pack.</p></div><div class="panel"><h3>Next — needs your tokens</h3><p>Live Jira issue creation, live GitHub issue creation, live Slack / Teams posting, and live AI explanations — each switched on only after you save your own token or webhook in Settings. Until then, generators and “Model not connected” are the honest labels.</p></div><div class="panel"><h3>Later</h3><p>Scheduled scans, more scanner formats, and richer host inventory views — only if they keep scoring transparent and data local.</p></div>`,
+  Roadmap: `<p class="so-plat-kicker blue">PLATFORM</p><h2>Roadmap — live now, later</h2><div class="panel"><h3>Live now</h3><p>Six scanner imports, merged ranked triage, contextual scoring v2 with breakdowns, executive dashboard, findings explorer, remediation board, scan comparison, Markdown / CSV / JSON exports, reviewer demo and portfolio pack.</p></div><div class="panel"><h3>Later</h3><p>Scheduled scans, more scanner formats, and richer host inventory views — only if they keep scoring transparent and data local.</p></div>`,
   Glossary: `<p class="so-plat-kicker blue">PLATFORM</p><h2>Glossary</h2><div class="panel"><div class="row-list">
 <div class="row"><strong>Triage</strong><span class="meta">Ranking findings by risk, so the fix order is clear</span></div>
 <div class="row"><strong>Finding</strong><span class="meta">One host + port + service issue from a scan</span></div>
@@ -191,15 +173,15 @@ const PLATFORM_PAGES = {
 <div class="row"><strong>Contextual scoring v2</strong><span class="meta">Deterministic 0–100 score from service, version, scanner severity, exposure, asset and host context</span></div>
 <div class="row"><strong>Board</strong><span class="meta">Findings grouped by status: Open, In progress, Fixed, Risk accepted, False positive</span></div>
 <div class="row"><strong>Compare</strong><span class="meta">Diffing two scans: new, resolved, still open</span></div>
-<div class="row"><strong>Generator</strong><span class="meta">A downloadable preview (CSV, pack or payload) — nothing created or sent</span></div></div></div>`,
+</div></div>`,
   Changelog: `<p class="so-plat-kicker blue">PLATFORM</p><h2>Changelog</h2><div class="panel"><div class="row-list">
-<div class="row"><strong>Fullstack rebuild</strong><span class="meta">TypeScript + Node.js backend, SQLite database, saved accounts, six imports, scoring v2, board, compare, exports, settings, demo packs, portfolio pack</span></div>
+<div class="row"><strong>Fullstack rebuild</strong><span class="meta">TypeScript + Node.js backend, SQLite database, saved accounts, six imports, scoring v2, board, compare, exports, demo packs, portfolio pack</span></div>
 <div class="row"><strong>Screen 1 rebuild</strong><span class="meta">Scrollytelling first page: hero, chapters 01–05, sign-in, reviewer walkthrough, Platform</span></div>
 <div class="row"><strong>Signed-in pages</strong><span class="meta">Overview, Triage, Board, Compare, Platform and Settings rebuilt to match the reference screenshots</span></div>
 <div class="row"><strong>Platform pages</strong><span class="meta">Full Workflow, Why CullSec, Ecosystem, Methodology, Portfolio, Get started, Security, Roadmap, Glossary, Changelog and FAQ pages, not summaries</span></div></div></div>`,
   FAQ: `<p class="so-plat-kicker blue">PLATFORM</p><h2>Frequently asked questions</h2><div class="panel"><div class="row-list">
-<div class="row"><strong>Is scoring AI?</strong><span class="meta">No. It is deterministic and rule-based. The AI panel says “Model not connected” until you add your own key.</span></div>
-<div class="row"><strong>Are Jira / GitHub / Slack / Teams live?</strong><span class="meta">No, not in this build. They are generators and payload previews until you connect tokens in Settings.</span></div>
+<div class="row"><strong>Is scoring AI?</strong><span class="meta">No. It is deterministic and rule-based — the formula is on the Methodology page.</span></div>
+
 <div class="row"><strong>Is there a public link?</strong><span class="meta">No. This build runs locally and is private to your account.</span></div>
 <div class="row"><strong>Is my scan data sent anywhere?</strong><span class="meta">No. Data lives in a local SQLite file and this app makes no outbound call with it.</span></div>
 <div class="row"><strong>What if I enter the wrong password?</strong><span class="meta">Sign-in is rejected. Use the password you set on first sign-in; the strong-password rule applies only to new accounts.</span></div>
@@ -226,15 +208,15 @@ function renderPlatform(){
   const SO_TEXT = {
     Workflow: "Upload -> triage -> review breakdown -> move on board -> compare -> export.",
     "Why CullSec": "One ranked list instead of six separate reports, with transparent scoring.",
-    Ecosystem: "Nmap, Nessus, OpenVAS, ZAP, Burp, and Qualys imports; Jira/GitHub/Slack/Teams generators.",
+    Ecosystem: "Nmap, Nessus, OpenVAS, ZAP, Burp, and Qualys imports.",
     Methodology: "Contextual scoring v2: service base + version + scanner severity + exposure + asset criticality + host context, capped at 100, deterministic, not AI.",
     Portfolio: "Architecture, README text, CV blurb, timed 2-minute demo script, downloadable as one Markdown file (signed-in Platform tab).",
     "Get started": "Sign in, upload a scan, review the ranked list, and export a report.",
-    Security: "Passwords are hashed server-side. Secrets are hashed with only a masked hint returned. Nothing is sent to external services by this app.",
-    Roadmap: "Now live: six imports, board, compare, exports. Next: live integrations with your tokens, model connection. Later: scheduled scans.",
+    Security: "Passwords are hashed server-side. Nothing is sent to external services by this app.",
+    Roadmap: "Now live: six imports, board, compare, exports. Later: scheduled scans, more formats, richer host views.",
     Glossary: "Triage: ranking findings by risk. Dedupe: removing duplicate findings for the same host, port, and service.",
-    Changelog: "Local TypeScript fullstack rebuild with SQLite, six imports, scoring v2, board, compare, exports, settings, demo packs, and portfolio pack.",
-    FAQ: "Is scoring AI? No, it is deterministic and rule-based. Are tickets live? No, generators until tokens are connected. Is data sent anywhere? No."
+    Changelog: "Local TypeScript fullstack rebuild with SQLite, six imports, scoring v2, board, compare, exports, demo packs, and portfolio pack.",
+    FAQ: "Is scoring AI? No, it is deterministic and rule-based. Is data sent anywhere? No."
   };
   nav.querySelectorAll(".so-plat-btn").forEach((b) => b.onclick = () => {
     nav.querySelectorAll(".so-plat-btn").forEach((x) => x.classList.toggle("active", x === b));
@@ -249,3 +231,5 @@ function renderPlatform(){
   btn.onclick = () => { panel.hidden = !panel.hidden; btn.textContent = panel.hidden ? "Show the 2-minute walkthrough" : "Hide the 2-minute walkthrough"; };
 })();
 if (token) showSignedIn(true);
+
+document.querySelectorAll(".goto-tab").forEach((b) => b.onclick = () => { const tb = document.querySelector(`[data-tab="${b.dataset.goto}"]`); if (tb) tb.click(); });

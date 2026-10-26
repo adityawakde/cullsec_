@@ -373,3 +373,4 @@ html[data-theme="dark"] .si-kicker{color:#4fc08a}
 .so-feature{border-radius:16px}
 @media (max-width:900px){.walk-steps{grid-template-columns:1fr 1fr}.overview-grid{grid-template-columns:1fr}}
 @media (max-width:600px){.walk-steps{grid-template-columns:1fr}.si-overview-head{padding:20px}}
+#themePill[hidden]{display:none}

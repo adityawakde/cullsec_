@@ -177,6 +177,13 @@ html[data-theme="dark"] .so-brand{color:#4fc08a}
 .theme-pill{display:flex;gap:2px;border:1px solid var(--border);background:var(--surface);border-radius:999px;padding:3px}
 .theme-pill button{border:0;background:transparent;box-shadow:none;padding:7px 13px;border-radius:999px;font-weight:700;font-size:14px}
 .theme-pill button:first-child{background:var(--surface-2)}
+.header-right{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.header-account:not([hidden]){display:flex;flex-direction:column;line-height:1.2}
+#signedInUser[hidden]{display:none}
+.account-actions{display:flex;gap:8px;align-items:center}
+.account-actions button{padding:7px 13px;border-radius:999px;font-weight:700;font-size:14px}
+.account-actions .signout-btn{border-color:#c0392b;color:#a93226}
+html[data-theme="dark"] .account-actions .signout-btn{border-color:#e57373;color:#ef9a9a}
 #signedOut{max-width:1160px;margin:0 auto;padding:0 20px 10px}
 .so-hero{text-align:center;padding:34px 8px 10px;background:
   radial-gradient(620px 220px at 18% 4%,rgba(79,192,138,.22),transparent 65%),

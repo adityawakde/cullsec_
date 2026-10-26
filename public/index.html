@@ -3,7 +3,7 @@
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>CullSec — Vulnerability Triage</title><link rel="stylesheet" href="styles.css"></head>
 <body>
-<header class="so-topbar"><div class="so-brand">CullSec &nbsp;·&nbsp; BY ADYREX</div><div class="header-right"><div class="theme-pill" role="group" aria-label="Theme"><button id="themeLight" type="button">☀ Light</button> <button id="themeDark" type="button">☾ Dark</button></div><div id="signedInUser" class="header-account" hidden><b id="siName"></b><span id="siEmail"></span></div><div class="account-actions"><button id="editProfile" type="button" hidden>Edit profile</button> <button id="signOut" type="button" class="signout-btn" hidden>Sign out</button></div></div></header>
+<header class="so-topbar"><div class="so-brand">CullSec &nbsp;·&nbsp; BY ADYREX</div><div class="header-right"><div class="theme-pill" id="themePill" role="group" aria-label="Theme"><button id="themeLight" type="button">☀ Light</button> <button id="themeDark" type="button">☾ Dark</button></div><div id="signedInUser" class="header-account" hidden><b id="siName"></b><span id="siEmail"></span></div><div class="account-actions"><button id="editProfile" type="button" hidden>Edit profile</button> <button id="signOut" type="button" class="signout-btn" hidden>Sign out</button></div></div></header>
 
 <div id="signedOut">
   <section class="so-hero">
@@ -269,7 +269,7 @@
 <section class="tab" id="tab-settings"><p class="si-kicker">SETTINGS</p><h2>Settings — only what works</h2><p class="lede">Your account, appearance and demo data. CullSec sends nothing anywhere, and stores everything in one local SQLite file.</p>
 <div class="si-settings-grid">
 <div class="panel"><h3>Your account</h3><p>Signed in as <strong id="settingsAccount">your account</strong>. Use Edit profile in the top bar to change your display name, or Sign out there.</p><p>Your scans, findings and board status are saved under your account, and waiting when you return.</p></div>
-<div class="panel"><h3>Appearance</h3><p>Light or Dark is in the top bar. Your choice is saved on this device, and a first visit follows your system setting.</p></div>
+<div class="panel"><h3>Appearance</h3><p>Light or Dark is on the start page, before you sign in. Your choice is saved on this device, applies to the dashboard too, and a first visit follows your system setting. To change it, sign out, change it on the start page, and sign back in.</p></div>
 <div class="panel"><h3>Security &amp; privacy</h3><p>Passwords are hashed server-side with scrypt and a per-account salt, never stored in plain text. Scan data lives in data/cullsec.db on this machine. This app makes no outbound call with your scan data.</p></div>
 <div class="panel"><h3>Reviewer demo data (fictional)</h3><p>Load two fictional DEMO scans — “before fixes” (7 findings) and “after fixes” (3 findings) — so a reviewer can run the full story (rank → board → compare) in two minutes without any real network. Hosts are 10.0.5.x lab fiction. Loading twice does nothing — the demo is created once per account.</p><button id="reviewerDemoBtn" type="button" class="primary">Load reviewer demo (fictional)</button></div>
 <div class="panel"><h3>Your data</h3><p>Delete a single scan in Triage → Saved scans. To reset everything local, stop the server and delete data/cullsec.db, then start it again.</p></div>

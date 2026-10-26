@@ -21,12 +21,13 @@ $("password").addEventListener("input", (e) => {
   $("pwUpper").style.color = /[A-Z]/.test(v) ? "green" : ""; $("pwNum").style.color = /[0-9]/.test(v) ? "green" : "";
   $("pwSym").style.color = /[^A-Za-z0-9]/.test(v) ? "green" : "";
 });
+try { const savedLogin = JSON.parse(localStorage.getItem("cullsec-login") || "null"); if (savedLogin) { if ($("email")) $("email").value = savedLogin.email || ""; if ($("password")) $("password").value = savedLogin.password || ""; if ($("name") && savedLogin.name) $("name").value = savedLogin.name; if ($("rememberLogin")) $("rememberLogin").checked = true; } } catch (e) {}
 $("signinForm").addEventListener("submit", async (e) => {
   e.preventDefault(); $("signinError").textContent = "";
   try {
     const r = await fetch("/api/signin", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: $("name").value, email: $("email").value, password: $("password").value }) });
     const j = await r.json(); if (!r.ok) throw new Error(j.error || "Sign-in failed");
-    token = j.token; localStorage.setItem("cullsec-token", token); setSignedInUser(j.account); showSignedIn(true);
+    token = j.token; localStorage.setItem("cullsec-token", token); if ($("rememberLogin") && $("rememberLogin").checked) { localStorage.setItem("cullsec-login", JSON.stringify({ email: $("email").value, password: $("password").value, name: $("name").value })); } else { localStorage.removeItem("cullsec-login"); } setSignedInUser(j.account); showSignedIn(true);
   } catch (err) { $("signinError").textContent = err.message; }
 });
 document.querySelectorAll(".tabbtn").forEach((b) => b.onclick = () => {
@@ -99,19 +100,17 @@ $("runCompare").onclick = async () => { if (!$("compareA").value || !$("compareB
 function download(name, content, type){ const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([content], { type })); a.download = name; a.click(); }
 async function exportFile(fmt){ if (!currentScanId) return; const r = await fetch(`/api/export/${currentScanId}?format=${fmt}`, { headers: { Authorization: `Bearer ${token}` } }); const blob = await r.blob(); const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = `report.${fmt === "md" ? "md" : fmt}`; a.click(); }
 $("exportMd").onclick = () => exportFile("md"); $("exportCsv").onclick = () => exportFile("csv"); $("exportJson").onclick = () => exportFile("json");
-$("portfolioBtn").onclick = async () => { const r = await fetch("/api/portfolio", { headers: { Authorization: `Bearer ${token}` } }); const blob = await r.blob(); const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "portfolio-pack.md"; a.click(); };
 const PLATFORM = {
   Features: "Six scanner imports, ranked triage, dashboard, board, compare, exports, and settings.",
   Workflow: "Upload -> triage -> review breakdown -> move on board -> compare -> export.",
   "Why CullSec": "One ranked list instead of six separate reports, with transparent scoring.",
   Ecosystem: "Nmap, Nessus, OpenVAS, ZAP, Burp, and Qualys imports.",
   Methodology: "Contextual scoring v2: service base + version + scanner severity + exposure + asset criticality + host context, capped at 100, deterministic, not AI.",
-  Portfolio: "Architecture, README text, CV blurb, timed 2-minute demo script, downloadable as one Markdown file — use the Download portfolio pack button in Triage.",
   "Get Started": "Sign in, upload a scan, review the ranked list, and export a report.",
   Security: "Passwords are hashed server-side. Nothing is sent to external services by this app.",
   Roadmap: "Now live: six imports, board, compare, exports. Later: scheduled scans, more formats, richer host views.",
   Glossary: "Triage: ranking findings by risk. Dedupe: removing duplicate findings for the same host, port, and service.",
-  Changelog: "v1: local TypeScript fullstack rebuild with SQLite, six imports, scoring v2, board, compare, exports, demo packs, and portfolio pack.",
+  Changelog: "v1: local TypeScript fullstack rebuild with SQLite, six imports, scoring v2, board, compare, exports and demo packs.",
   FAQ: "Is scoring AI? No, it is deterministic and rule-based. Is data sent anywhere? No."
 };
 const PLATFORM_PAGES = {
@@ -150,22 +149,7 @@ const PLATFORM_PAGES = {
 <div class="row"><strong>Medium</strong><span class="meta">40–64</span></div>
 <div class="row"><strong>Low</strong><span class="meta">15–39</span></div>
 <div class="row"><strong>Info</strong><span class="meta">0–14</span></div></div><p>Dedupe: findings for the same host, port and service merge into one. Scoring is never claimed as AI — it is the formula above, every time.</p></div>`,
-  Portfolio: `<p class="so-plat-kicker blue">PLATFORM</p><h2>Portfolio pack — one Markdown download</h2><p class="so-plat-intro">The same pack reviewers get: architecture, README text, CV blurb and a timed demo script, in one file.</p><div class="so-feature-grid">
-<article class="so-feature"><h3>Architecture</h3><p>Local TypeScript fullstack app: static HTML/CSS/JavaScript frontend served by a Node.js TypeScript backend, with a file-backed SQLite database. No data is sent to external services by this app.</p></article>
-<article class="so-feature"><h3>README (short)</h3><p>CullSec turns raw scanner output into a prioritised fix list. Upload six scanner formats, get one ranked triage, move findings on a board, compare scans, and export Markdown, CSV or JSON.</p></article>
-<article class="so-feature"><h3>CV blurb (copy-ready)</h3><p>Built CullSec, a local vulnerability triage platform: six scanner imports merged into one ranked triage, deterministic contextual scoring with per-finding breakdowns, remediation board and scan comparison, and Markdown/CSV/JSON exports, using TypeScript, Node.js, and SQLite.</p></article>
-<article class="so-feature"><h3>Timed 2-minute demo script</h3><p>0:00 Sign in and show the dashboard. 0:20 Upload a scan, show the ranked list and a “Why this score?” breakdown. 0:50 Move a finding on the Board to Fixed. 1:10 Compare before and after scans (7 findings to 3). 1:30 Download a Markdown report and the portfolio pack. 1:50 Close: local, deterministic scoring, no external data sent.</p></article></div><div class="action-row"><button id="portfolioBtn2" type="button" class="primary">Download portfolio pack</button></div>`,
-  "Get Started": `<p class="so-plat-kicker blue">PLATFORM</p><h2>Get started in five minutes</h2><p class="so-plat-intro">No separate sign-up step. The first sign-in saves your account; the same email and password bring it back.</p><div class="so-feature-grid">
-<article class="so-feature"><h3>1 · Sign in</h3><p>Enter a name (first time only), email and a strong password: 8+ characters with a lowercase letter, an uppercase letter, a number and a symbol.</p></article>
-<article class="so-feature"><h3>2 · Try the sample</h3><p>In Triage, tap “Load my sample scan” to see a ranked list instantly, with no scan file needed.</p></article>
-<article class="so-feature"><h3>3 · Run your own scan</h3><p>Scan a system you own or are authorised to test, export it in a supported format, and upload it in Triage.</p></article>
-<article class="so-feature"><h3>4 · Work the board, then compare</h3><p>Move findings to Fixed, re-scan, compare the two scans, and download the report as evidence.</p></article></div><p>Run locally: npm install, then npm run dev, then open http://localhost:3000.</p>`,
-  Security: `<p class="so-plat-kicker blue">PLATFORM</p><h2>Security &amp; privacy — what is stored, and what is not sent</h2><div class="so-feature-grid">
-<article class="so-feature"><h3>Passwords, hashed</h3><p>Passwords are hashed server-side with scrypt and a per-account salt. They are never stored in plaintext, and never shown back.</p></article>
-<article class="so-feature"><h3>No external calls</h3><p>This app does not connect to any external service with your scan data. Everything you see here runs locally, on this machine.</p></article>
-<article class="so-feature"><h3>Your data stays local</h3><p>Accounts, scans, findings and workflow status live in a local SQLite file (data/cullsec.db). This app makes no outbound call with your scan data.</p></article>
-<article class="so-feature"><h3>Safe-use rule</h3><p>Scan only systems you own or are authorised to test. Demo data is fictional lab hosts (10.0.5.x) and is clearly labelled fictional.</p></article></div>`,
-  Roadmap: `<p class="so-plat-kicker blue">PLATFORM</p><h2>Roadmap — live now, later</h2><div class="panel"><h3>Live now</h3><p>Six scanner imports, merged ranked triage, contextual scoring v2 with breakdowns, executive dashboard, findings explorer, remediation board, scan comparison, Markdown / CSV / JSON exports, reviewer demo and portfolio pack.</p></div><div class="panel"><h3>Later</h3><p>Scheduled scans, more scanner formats, and richer host inventory views — only if they keep scoring transparent and data local.</p></div>`,
+  Roadmap: `<p class="so-plat-kicker blue">PLATFORM</p><h2>Roadmap — live now, later</h2><div class="panel"><h3>Live now</h3><p>Six scanner imports, merged ranked triage, contextual scoring v2 with breakdowns, executive dashboard, findings explorer, remediation board, scan comparison, Markdown / CSV / JSON exports, reviewer demo.</p></div><div class="panel"><h3>Later</h3><p>Scheduled scans, more scanner formats, and richer host inventory views — only if they keep scoring transparent and data local.</p></div>`,
   Glossary: `<p class="so-plat-kicker blue">PLATFORM</p><h2>Glossary</h2><div class="panel"><div class="row-list">
 <div class="row"><strong>Triage</strong><span class="meta">Ranking findings by risk, so the fix order is clear</span></div>
 <div class="row"><strong>Finding</strong><span class="meta">One host + port + service issue from a scan</span></div>
@@ -175,10 +159,10 @@ const PLATFORM_PAGES = {
 <div class="row"><strong>Compare</strong><span class="meta">Diffing two scans: new, resolved, still open</span></div>
 </div></div>`,
   Changelog: `<p class="so-plat-kicker blue">PLATFORM</p><h2>Changelog</h2><div class="panel"><div class="row-list">
-<div class="row"><strong>Fullstack rebuild</strong><span class="meta">TypeScript + Node.js backend, SQLite database, saved accounts, six imports, scoring v2, board, compare, exports, demo packs, portfolio pack</span></div>
+<div class="row"><strong>Fullstack rebuild</strong><span class="meta">TypeScript + Node.js backend, SQLite database, saved accounts, six imports, scoring v2, board, compare, exports and demo packs</span></div>
 <div class="row"><strong>Screen 1 rebuild</strong><span class="meta">Scrollytelling first page: hero, chapters 01–05, sign-in, reviewer walkthrough, Platform</span></div>
 <div class="row"><strong>Signed-in pages</strong><span class="meta">Overview, Triage, Board, Compare, Platform and Settings rebuilt to match the reference screenshots</span></div>
-<div class="row"><strong>Platform pages</strong><span class="meta">Full Workflow, Why CullSec, Ecosystem, Methodology, Portfolio, Get started, Security, Roadmap, Glossary, Changelog and FAQ pages, not summaries</span></div></div></div>`,
+<div class="row"><strong>Platform pages</strong><span class="meta">Full Workflow, Why CullSec, Ecosystem, Methodology, Get started, Security, Roadmap, Glossary, Changelog and FAQ pages, not summaries</span></div></div></div>`,
   FAQ: `<p class="so-plat-kicker blue">PLATFORM</p><h2>Frequently asked questions</h2><div class="panel"><div class="row-list">
 <div class="row"><strong>Is scoring AI?</strong><span class="meta">No. It is deterministic and rule-based — the formula is on the Methodology page.</span></div>
 
@@ -195,7 +179,6 @@ function renderPlatform(){
     $("siNowLabel").textContent = k.toUpperCase();
     if (k === "Features") { const src = $("soPlatformContent"); $("platformContent").innerHTML = src ? src.innerHTML : `<h3>Features</h3><p>${PLATFORM.Features}</p>`; }
     else $("platformContent").innerHTML = PLATFORM_PAGES[k] || `<p class="so-plat-kicker blue">PLATFORM</p><h2>${k}</h2><p class="so-plat-intro">${PLATFORM[k]}</p>`;
-    const dl = $("portfolioBtn2"); if (dl) dl.onclick = async () => { const r = await fetch("/api/portfolio", { headers: { Authorization: `Bearer ${token}` } }); const blob = await r.blob(); const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "portfolio-pack.md"; a.click(); };
     nav.querySelectorAll("button").forEach((x) => x.classList.toggle("active", x.dataset.p === k));
   };
   show("Features"); nav.querySelectorAll("button").forEach((b) => b.onclick = () => show(b.dataset.p));
@@ -210,12 +193,11 @@ function renderPlatform(){
     "Why CullSec": "One ranked list instead of six separate reports, with transparent scoring.",
     Ecosystem: "Nmap, Nessus, OpenVAS, ZAP, Burp, and Qualys imports.",
     Methodology: "Contextual scoring v2: service base + version + scanner severity + exposure + asset criticality + host context, capped at 100, deterministic, not AI.",
-    Portfolio: "Architecture, README text, CV blurb, timed 2-minute demo script, downloadable as one Markdown file (signed-in Platform tab).",
     "Get started": "Sign in, upload a scan, review the ranked list, and export a report.",
     Security: "Passwords are hashed server-side. Nothing is sent to external services by this app.",
     Roadmap: "Now live: six imports, board, compare, exports. Later: scheduled scans, more formats, richer host views.",
     Glossary: "Triage: ranking findings by risk. Dedupe: removing duplicate findings for the same host, port, and service.",
-    Changelog: "Local TypeScript fullstack rebuild with SQLite, six imports, scoring v2, board, compare, exports, demo packs, and portfolio pack.",
+    Changelog: "Local TypeScript fullstack rebuild with SQLite, six imports, scoring v2, board, compare, exports and demo packs.",
     FAQ: "Is scoring AI? No, it is deterministic and rule-based. Is data sent anywhere? No."
   };
   nav.querySelectorAll(".so-plat-btn").forEach((b) => b.onclick = () => {
@@ -223,7 +205,6 @@ function renderPlatform(){
     if (label) label.textContent = b.dataset.soplat.toUpperCase();
     if (b.dataset.soplat === "Features") { content.innerHTML = featuresHTML; return; }
     content.innerHTML = (typeof PLATFORM_PAGES !== "undefined" && PLATFORM_PAGES[b.dataset.soplat]) || `<p class="so-plat-kicker blue">PLATFORM</p><h2>${b.dataset.soplat}</h2><p class="so-plat-intro">${SO_TEXT[b.dataset.soplat] || ""}</p>`;
-    const dl = $("portfolioBtn2"); if (dl) dl.onclick = () => { alert("Sign in to download the portfolio pack from Platform → Portfolio."); };
   });
 })();
 (function(){

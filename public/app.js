@@ -6,7 +6,7 @@ function setTheme(t){ document.documentElement.setAttribute("data-theme", t); lo
 $("themeLight").onclick = () => setTheme("light"); $("themeDark").onclick = () => setTheme("dark");
 function headers(){ return { "Content-Type": "application/json", Authorization: `Bearer ${token}` }; }
 async function api(path, opts = {}){ const r = await fetch(path, { ...opts, headers: headers() }); const j = await r.json().catch(() => ({})); if (!r.ok) throw new Error(j.error || "Request failed"); return j; }
-function setSignedInUser(acct){ if (!acct) return; localStorage.setItem("cullsec-account", JSON.stringify(acct)); $("siName").textContent = acct.name || ""; $("siEmail").textContent = acct.email || ""; if ($("profileName")) $("profileName").value = acct.name || ""; const sa = $("settingsAccount"); if (sa) sa.textContent = (acct.name || "") + " (" + (acct.email || "") + ")"; }
+function setSignedInUser(acct){ if (!acct) return; localStorage.setItem("cullsec-account", JSON.stringify(acct)); $("siName").textContent = acct.name || ""; $("siEmail").textContent = acct.email || ""; if ($("profileName")) $("profileName").value = acct.name || ""; }
 function showSignedIn(show){
   $("signedOut").hidden = show; $("signedIn").hidden = !show; $("signOut").hidden = !show; $("editProfile").hidden = !show; $("signedInUser").hidden = !show; if ($("globalFooter")) $("globalFooter").hidden = !show; if ($("themePill")) $("themePill").hidden = show; window.scrollTo(0, 0);
   if (show) { try { const a = JSON.parse(localStorage.getItem("cullsec-account") || "null"); if (a) setSignedInUser(a); } catch (e) {} loadDashboard(); }
@@ -46,6 +46,7 @@ async function loadDashboard(){
     $("savedScansList").querySelectorAll("[data-del]").forEach((b) => b.onclick = async () => { if (!confirm(`Delete this scan and its findings?`)) return; await api(`/api/scans/${b.dataset.del}`, { method: "DELETE" }); if (String(currentScanId) === b.dataset.del) { currentScanId = null; currentFindings = []; } loadDashboard(); });
     $("compareEmpty").hidden = d.scans.length >= 2; $("boardEmpty").hidden = d.scans.length > 0;
     const sev = d.severity || {};
+    const threatEl = $("threatLevel"); if (threatEl) { const lvl = (sev.Critical || 0) > 0 ? ["HIGH", "threat-high"] : (sev.High || 0) > 0 ? ["ELEVATED", "threat-elevated"] : (d.total || 0) > 0 ? ["LOW", "threat-low"] : ["—", "threat-none"]; threatEl.textContent = `🛡 Threat level: ${lvl[0]}`; threatEl.className = `threat-chip ${lvl[1]}`; }
     const total = d.total || 0;
     const fixed = (d.status && d.status.Fixed) || 0;
     const progress = total ? Math.round((fixed / total) * 100) : 0;
@@ -54,9 +55,9 @@ async function loadDashboard(){
     $("scanSummary").innerHTML = `<div class="panel"><h3>Per-scan summary</h3><div class="row-list">${d.perScan.map((s) => `<div class="row"><div><strong>${esc(s.name)}</strong><div class="meta">${s.total} findings</div></div><div class="meta">${s.critical} critical · ${s.fixed} fixed</div></div>`).join("") || "<p>No scans yet.</p>"}</div></div>`;
     $("riskyHosts").innerHTML = `<div class="row-list">${d.riskiestHosts.map((h) => `<div class="row"><strong>${esc(h.host)}</strong><span class="meta">${h.count} findings · max ${h.max}</span></div>`).join("") || "<p>No hosts yet.</p>"}</div>`;
     const maxSvc = Math.max(1, ...(d.commonServices || []).map((s) => s.count));
-    $("commonServices").innerHTML = `<div class="row-list">${d.commonServices.map((s) => `<div class="row"><strong>${esc(s.service)}</strong><span style="display:flex;gap:10px;align-items:center"><span class="mini-bar"><i style="width:${Math.round((s.count / maxSvc) * 100)}%"></i></span><span class="meta">${s.count}</span></span></div>`).join("") || "<p>No services yet.</p>"}</div>`;
+    $("commonServices").innerHTML = `<div class="svc-list"><div class="svc-head"><span></span><span>Service</span><span>Exposure</span><span>Findings</span></div>${d.commonServices.map((s, i) => `<div class="svc-row"><span class="svc-rank">${i + 1}</span><span class="svc-name">${esc(s.service)}</span><span class="svc-bar"><i style="width:${Math.round((s.count / maxSvc) * 100)}%"></i></span><span class="svc-count">${s.count} finding${s.count === 1 ? "" : "s"}</span></div>`).join("") || "<p>No services yet.</p>"}</div>`;
     $("trend").innerHTML = `<div class="row-list">${d.trend.map((t) => `<div class="row"><strong>${esc(t.name)}</strong><span class="meta">${t.total} findings · ${t.critical} critical · avg ${t.avg}</span></div>`).join("") || "<p>No scans yet.</p>"}</div>`;
-    $("hostInventory").innerHTML = `<div class="row-list">${d.hostInventory.map((h) => `<div class="row"><div><strong>${esc(h.host)}</strong><div class="meta">${esc(h.services)}</div></div><span class="meta">max ${h.maxScore}</span></div>`).join("") || "<p>No hosts yet.</p>"}</div>`;
+    $("hostInventory").innerHTML = `<div class="svc-list">${d.hostInventory.map((h) => `<div class="svc-row host-row"><span class="svc-name host-name">${esc(h.host)}</span><span class="host-svcs">${[...new Set(String(h.services || "").split(", ").filter(Boolean))].map((s) => `<span class="svc-pill">${esc(s)}</span>`).join("") || "<span class=\"meta\">—</span>"}</span><span class="svc-count">max ${h.maxScore}</span></div>`).join("") || "<p>No hosts yet.</p>"}</div>`;
     const opts = d.scans.map((s) => `<option value="${s.id}">${s.name}</option>`).join("");
     $("compareA").innerHTML = opts; $("compareB").innerHTML = opts;
     renderBoard(); renderPlatform();
@@ -107,7 +108,7 @@ function download(name, content, type){ const a = document.createElement("a"); a
 async function exportFile(fmt){ if (!currentScanId) return; const r = await fetch(`/api/export/${currentScanId}?format=${fmt}`, { headers: { Authorization: `Bearer ${token}` } }); const blob = await r.blob(); const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = `report.${fmt === "md" ? "md" : fmt}`; a.click(); }
 $("exportMd").onclick = () => exportFile("md"); $("exportCsv").onclick = () => exportFile("csv"); $("exportJson").onclick = () => exportFile("json");
 const PLATFORM = {
-  Features: "Six scanner imports, ranked triage, dashboard, board, compare, exports, and settings.",
+  Features: "Six scanner imports, ranked triage, dashboard, board, compare, and exports.",
   Workflow: "Upload -> triage -> review breakdown -> move on board -> compare -> export.",
   "Why CullSec": "One ranked list instead of six separate reports, with transparent scoring.",
   Ecosystem: "Nmap, Nessus, OpenVAS, ZAP, Burp, and Qualys imports.",
@@ -167,7 +168,7 @@ const PLATFORM_PAGES = {
   Changelog: `<p class="so-plat-kicker blue">PLATFORM</p><h2>Changelog</h2><div class="panel"><div class="row-list">
 <div class="row"><strong>Fullstack rebuild</strong><span class="meta">TypeScript + Node.js backend, SQLite database, saved accounts, six imports, scoring v2, board, compare, exports and demo packs</span></div>
 <div class="row"><strong>Screen 1 rebuild</strong><span class="meta">Scrollytelling first page: hero, chapters 01–05, sign-in, reviewer walkthrough, Platform</span></div>
-<div class="row"><strong>Signed-in pages</strong><span class="meta">Overview, Triage, Board, Compare, Platform and Settings rebuilt to match the reference screenshots</span></div>
+<div class="row"><strong>Signed-in pages</strong><span class="meta">Overview, Triage, Board, Compare and Platform rebuilt to match the reference screenshots</span></div>
 <div class="row"><strong>Platform pages</strong><span class="meta">Full Workflow, Why CullSec, Ecosystem, Methodology, Get started, Security, Roadmap, Glossary, Changelog and FAQ pages, not summaries</span></div></div></div>`,
   FAQ: `<p class="so-plat-kicker blue">PLATFORM</p><h2>Frequently asked questions</h2><div class="panel"><div class="row-list">
 <div class="row"><strong>Is scoring AI?</strong><span class="meta">No. It is deterministic and rule-based — the formula is on the Methodology page.</span></div>

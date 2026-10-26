@@ -380,3 +380,27 @@ html[data-theme="dark"] .si-kicker{color:#4fc08a}
 .upload-card[hidden]{display:none}
 .why-answer{margin-top:12px}
 .why-answer:empty{display:none}
+
+/* --- Common services / host inventory aligned lists + cyber cues --- */
+.threat-chip{display:inline-block;font-weight:800;font-size:13px;letter-spacing:.06em;text-transform:uppercase;padding:7px 13px;border-radius:999px;border:1px solid var(--border);background:var(--surface-2);margin-bottom:14px}
+.threat-chip.threat-high{background:#fdecea;color:#b42318;border-color:#f0b8b2}
+.threat-chip.threat-elevated{background:#fdf3e3;color:#8a5a00;border-color:#e8c87a}
+.threat-chip.threat-low{background:#e6f4ec;color:#1f7a52;border-color:#a9d6bd}
+[data-theme="dark"] .threat-chip.threat-high{background:#3a1512;color:#f97066;border-color:#7a2a24}
+[data-theme="dark"] .threat-chip.threat-elevated{background:#3a2c10;color:#f0c060;border-color:#6b5220}
+[data-theme="dark"] .threat-chip.threat-low{background:#12281e;color:#4fc08a;border-color:#2a5c44}
+.svc-list{display:flex;flex-direction:column;gap:2px}
+.svc-head,.svc-row{display:grid;grid-template-columns:32px 1fr 140px 100px;gap:12px;align-items:center;padding:10px 12px}
+.svc-head{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border)}
+.svc-row{border:1px solid var(--border);border-radius:10px;background:var(--surface-2)}
+.svc-rank{font-weight:800;color:var(--muted);text-align:center}
+.svc-name{font-weight:700}
+.svc-bar{height:8px;background:var(--border);border-radius:999px;overflow:hidden}
+.svc-bar i{display:block;height:100%;background:var(--accent);border-radius:999px}
+.svc-count{font-weight:700;text-align:right;white-space:nowrap}
+.host-row{grid-template-columns:150px 1fr 90px}
+.host-name{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:14px}
+.host-svcs{display:flex;flex-wrap:wrap;gap:6px}
+.svc-pill{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;background:var(--surface);border:1px solid var(--border);border-radius:999px;padding:4px 9px}
+.finding-title{font-family:ui-monospace,Menlo,Consolas,monospace}
+@media (max-width:700px){.svc-head,.svc-row{grid-template-columns:32px 1fr 90px}.svc-head span:nth-child(3),.svc-row .svc-bar{display:none}.host-row{grid-template-columns:1fr}.host-row .svc-count{text-align:left}}

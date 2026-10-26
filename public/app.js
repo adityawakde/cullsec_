@@ -99,7 +99,7 @@ $("runTriage").onclick = async () => {
 };
 async function loadDemo(kind){ const r = await api(`/api/demo/${kind}`, { method: "POST", body: "{}" }); currentScanId = r.scanId; currentFindings = r.findings; $("triageStatus").textContent = `Demo loaded: ${r.findings.length} findings.`; renderFindings(currentFindings); loadDashboard(); }
 async function loadReviewerDemo(){ await loadDemo("before"); await loadDemo("after"); $("triageStatus").textContent = "Reviewer demo loaded: before (7 findings) and after (3 findings) — compare them in Compare."; }
-$("demoReviewer").onclick = loadReviewerDemo; $("reviewerDemoBtn").onclick = loadReviewerDemo;
+$("demoReviewer").onclick = loadReviewerDemo; const rdb = $("reviewerDemoBtn"); if (rdb) rdb.onclick = loadReviewerDemo;
 $("demoSample").onclick = () => loadDemo("before"); $("demoScanners").onclick = () => loadDemo("scanners");
 $("pasteToggle").onclick = () => { $("pastePanel").hidden = !$("pastePanel").hidden; };
 $("pasteRun").onclick = async () => { const content = $("pasteText").value.trim(); if (!content) { $("triageStatus").textContent = "Paste scan text first."; return; } const r = await api("/api/scans", { method: "POST", body: JSON.stringify({ name: $("scanName").value || "Pasted scan", files: [{ scanner: "Nmap", content }] }) }); currentScanId = r.scanId; currentFindings = r.findings; $("triageStatus").textContent = `Triage complete: ${r.findings.length} findings.`; renderFindings(currentFindings); loadDashboard(); };

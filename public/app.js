@@ -8,7 +8,7 @@ function headers(){ return { "Content-Type": "application/json", Authorization: 
 async function api(path, opts = {}){ const r = await fetch(path, { ...opts, headers: headers() }); const j = await r.json().catch(() => ({})); if (!r.ok) throw new Error(j.error || "Request failed"); return j; }
 function setSignedInUser(acct){ if (!acct) return; localStorage.setItem("cullsec-account", JSON.stringify(acct)); $("siName").textContent = acct.name || ""; $("siEmail").textContent = acct.email || ""; if ($("profileName")) $("profileName").value = acct.name || ""; const sa = $("settingsAccount"); if (sa) sa.textContent = (acct.name || "") + " (" + (acct.email || "") + ")"; }
 function showSignedIn(show){
-  $("signedOut").hidden = show; $("signedIn").hidden = !show; $("signOut").hidden = !show; $("editProfile").hidden = !show; $("signedInUser").hidden = !show; if ($("globalFooter")) $("globalFooter").hidden = !show; window.scrollTo(0, 0);
+  $("signedOut").hidden = show; $("signedIn").hidden = !show; $("signOut").hidden = !show; $("editProfile").hidden = !show; $("signedInUser").hidden = !show; if ($("globalFooter")) $("globalFooter").hidden = !show; if ($("themePill")) $("themePill").hidden = show; window.scrollTo(0, 0);
   if (show) { try { const a = JSON.parse(localStorage.getItem("cullsec-account") || "null"); if (a) setSignedInUser(a); } catch (e) {} loadDashboard(); }
 }
 $("signOut").onclick = () => { token = ""; localStorage.removeItem("cullsec-token"); localStorage.removeItem("cullsec-account"); showSignedIn(false); };

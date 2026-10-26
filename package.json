@@ -2,18 +2,28 @@
   "name": "cullsec-fullstack",
   "type": "module",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Local vulnerability triage and management platform",
+  "main": "dist/server.js",
   "scripts": {
     "build": "tsc",
     "start": "node dist/server.js",
     "dev": "tsc && node dist/server.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "vulnerability-triage",
+    "security",
+    "nmap",
+    "nessus",
+    "openvas",
+    "zap",
+    "burp",
+    "qualys"
+  ],
+  "author": "ADYREX",
+  "license": "MIT",
   "devDependencies": {
     "@types/node": "^26.6.5",
     "typescript": "^7.0.2"
-  }
+  },
+  "private": true
 }

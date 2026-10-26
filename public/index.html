@@ -99,7 +99,7 @@
       <h2>Work from the top. Track every step.</h2>
       <p>Each finding explains in plain language why it matters and exactly how to fix it, then moves through Open → In progress → Fixed on your board — and exports as Markdown, CSV or JSON.</p>
       <p class="so-flow"><span class="so-pill red-pill">Open</span> &nbsp;→&nbsp; <span class="so-pill amber-pill">In progress</span> &nbsp;→&nbsp; <span class="so-pill green-pill">Fixed</span></p>
-      <p>Plus: exports and a portfolio pack — all from the same scan.</p>
+      <p>Plus: exports — all from the same scan.</p>
     </article>
     <article class="so-chapter">
       <span class="so-dot" aria-hidden="true"></span>
@@ -134,7 +134,7 @@
         <li id="pwNum">A number (0–9)</li>
         <li id="pwSym">A symbol (! @ # $ % ...)</li>
       </ul>
-      <p class="so-note">The rule applies when your account is first saved. Already have an account? Just use the password you set the first time.</p>
+      <label class="so-remember"><input type="checkbox" id="rememberLogin"> Save my login info on this device</label><p class="so-note">If ticked, your email and password will already be filled in next time you open CullSec on this browser. Saved only on this device — do not tick this on a shared computer.</p><p class="so-note">The rule applies when your account is first saved. Already have an account? Just use the password you set the first time.</p>
       <button type="submit">Enter CullSec →</button>
       <p id="signinError" class="error"></p>
       <p class="so-signin-foot">Private app by ADYREX — your account and every scan you run are saved only inside this app, under your email.</p>
@@ -151,7 +151,7 @@
         <article class="walk-step"><span class="walk-num">02</span><h3>See the risk, ranked</h3><p>CullSec scores every finding 0–100 and sorts it. Telnet lands on top at 100 Critical, exposed databases follow, SSH and HTTPS sit at the bottom — each with its full breakdown.</p><p class="walk-example">Telnet 100 Critical · MySQL 68 High · SSH 13 Low</p></article>
         <article class="walk-step"><span class="walk-num">03</span><h3>Work the board</h3><p>Pick the top finding and move it Open → In progress → Fixed. The board and the remediation progress update under your account, scan by scan.</p><p class="walk-example">Open → In progress → Fixed · progress 0% → 14%</p></article>
         <article class="walk-step"><span class="walk-num">04</span><h3>Prove the fix</h3><p>Re-scan and compare before with after. The diff is the proof: what is new, what was resolved, and what is still open.</p><p class="walk-example">Before 7 findings → After 3 · 0 new · 4 resolved · 3 still open</p></article>
-        <article class="walk-step"><span class="walk-num">05</span><h3>Export the proof</h3><p>Download the report as Markdown, CSV or JSON, ending with “Built by ADYREX”, or grab the portfolio pack with the architecture, README and demo script.</p><p class="walk-example">report.md · report.csv · report.json · portfolio-pack.md</p></article>
+        <article class="walk-step"><span class="walk-num">05</span><h3>Export the proof</h3><p>Download the report as Markdown, CSV or JSON, ending with “Built by ADYREX”.</p><p class="walk-example">report.md · report.csv · report.json</p></article>
       </div>
       <p class="walk-foot">Total time: 2 minutes · Nothing here is saved · Hands-on version: sign in → Settings → Load reviewer demo (fictional).</p>
     </div>
@@ -165,7 +165,6 @@
       <button type="button" class="so-plat-btn" data-soplat="Why CullSec">Why CullSec</button>
       <button type="button" class="so-plat-btn" data-soplat="Ecosystem">Ecosystem</button>
       <button type="button" class="so-plat-btn" data-soplat="Methodology">Methodology</button>
-      <button type="button" class="so-plat-btn" data-soplat="Portfolio">Portfolio</button>
       <button type="button" class="so-plat-btn" data-soplat="Get started">Get started</button>
       <button type="button" class="so-plat-btn" data-soplat="Security">Security</button>
       <button type="button" class="so-plat-btn" data-soplat="Roadmap">Roadmap</button>
@@ -187,11 +186,11 @@
         <article class="so-feature" style="border-top-color:#6b7fd4"><span class="so-feat-icon purple">⇄</span><h3>Scan comparison</h3><p>Compare any two scans socket-by-socket: what is new, what was resolved, and what is still open — the proof that fixes actually worked.</p></article>
         <article class="so-feature" style="border-top-color:#2a8f7a"><span class="so-feat-icon teal">⊹</span><h3>Host inventory</h3><p>Findings grouped by host show the full exposure of each machine — every open port, service and version in one place.</p></article>
         <article class="so-feature" style="border-top-color:#8a8a2a"><span class="so-feat-icon olive">✎</span><h3>Score explanations</h3><p>Every finding explains why it scored what it scored, factor by factor, with a deterministic breakdown — no AI claim, no black box.</p></article>
-        <article class="so-feature" style="border-top-color:#2f9e6e"><span class="so-feat-icon green">↓</span><h3>Reports &amp; exports</h3><p>Download reports as Markdown, CSV and JSON, plus a portfolio pack with architecture, README, CV blurb and a timed demo script — all from the same scan.</p></article>
+        <article class="so-feature" style="border-top-color:#2f9e6e"><span class="so-feat-icon green">↓</span><h3>Reports &amp; exports</h3><p>Download reports as Markdown, CSV and JSON — all from the same scan.</p></article>
         <article class="so-feature" style="border-top-color:#3b82c4"><span class="so-feat-icon blue">⚑</span><h3>Known-bad version detection</h3><p>Fingerprints for dangerous versions — Apache 2.4.49/2.4.50 RCE, vsftpd 2.3.4 backdoor, IIS 6.0, ProFTPD backdoor — add score automatically.</p></article>
         <article class="so-feature" style="border-top-color:#c0392b"><span class="so-feat-icon red">◆</span><h3>Saved accounts &amp; history</h3><p>Sign in once and the account is saved. Every scan, finding and status is stored under your account and waiting when you return.</p></article>
         <article class="so-feature" style="border-top-color:#c9922a"><span class="so-feat-icon amber">⬡</span><h3>Zero-install workflow</h3><p>No Docker stack, no database server to babysit, no agent deployment. Scan in Kali, upload here, get a ranked action plan in seconds.</p></article>
-        <article class="so-feature" style="border-top-color:#2a8f7a"><span class="so-feat-icon teal">⬢</span><h3>Reviewer demo &amp; portfolio pack</h3><p>One-click fictional demo (before/after scans a reviewer can compare in two minutes) plus a downloadable portfolio pack — README, architecture, CV blurb and demo script — in Platform → Portfolio.</p></article>
+        <article class="so-feature" style="border-top-color:#2a8f7a"><span class="so-feat-icon teal">⬢</span><h3>Reviewer demo</h3><p>One-click fictional demo (before/after scans a reviewer can compare in two minutes) — no real network needed.</p></article>
       </div>
     </div>
     <p class="so-builtfor-label">BUILT FOR</p>
@@ -255,8 +254,8 @@
 <label>Sort <select id="sortSelect"><option value="score-desc">Score high to low</option><option value="score-asc">Score low to high</option><option value="host">Host A-Z</option></select></label>
 </div>
 <div id="findingsList"></div></div>
-<div class="panel"><h3>Exports</h3><p>Download the current scan as Markdown, CSV or JSON, or the portfolio pack.</p>
-<div class="button-row"><button id="exportMd" type="button">Download report.md</button><button id="exportCsv" type="button">Download report.csv</button><button id="exportJson" type="button">Download report.json</button><button id="portfolioBtn" type="button">Download portfolio pack</button></div>
+<div class="panel"><h3>Exports</h3><p>Download the current scan as Markdown, CSV or JSON.</p>
+<div class="button-row"><button id="exportMd" type="button">Download report.md</button><button id="exportCsv" type="button">Download report.csv</button><button id="exportJson" type="button">Download report.json</button></div>
 </div></section>
 
 <section class="tab" id="tab-board"><p class="si-kicker">REMEDIATION</p><h2>Remediation board</h2><p class="lede">Open a scan from the Triage tab or Overview trend, then work its board here.</p><div id="boardEmpty" class="si-empty"><p>Open a scan in the Triage tab first — its findings will appear here as a board.</p></div><div id="board"></div></section>

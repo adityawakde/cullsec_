@@ -12,15 +12,15 @@ Built by ADYREX.
 
 ### Overview — your risk, at a glance
 
-![Overview dashboard](docs/screenshots/overview.png)
+![Overview dashboard](docs/screenshots/overview.jpg)
 
 ### Overview — Common services, aligned by exposure
 
-![Common services](docs/screenshots/common-services.png)
+![Common services](docs/screenshots/common-services.jpg)
 
 ### Reviewer walkthrough — 2 minutes, fictional data only
 
-![Walkthrough](docs/screenshots/walkthrough.png)
+![Walkthrough](docs/screenshots/walkthrough.jpg)
 
 ## Features
 

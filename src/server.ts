@@ -116,20 +116,6 @@ function createFictionalScan(accountId: number, name: string, kind: "before" | "
   for (const f of scored) ins.run(scanId, f.host, f.port, f.service, f.title, f.version || "", f.severity, f.score, JSON.stringify(f.breakdown), f.source, f.scanner);
   return scanId;
 }
-const PORTFOLIO_MD = `# CullSec — Portfolio Pack
-
-## Architecture
-CullSec is a local TypeScript fullstack app: a static frontend (HTML/CSS/JavaScript) served by a Node.js TypeScript backend, with a file-backed SQLite database (data/cullsec.db). Sign-in, scans, findings, workflow status, and scoring breakdowns are stored in SQLite. No data is sent to external services by this app.
-
-## README (short)
-CullSec turns raw scanner output into a prioritised fix list. Upload Nmap, Nessus, OpenVAS, ZAP, Burp, or Qualys output, get one ranked triage with contextual scoring, move findings on a board, compare scans, and export Markdown, CSV, or JSON. Scoring is deterministic and rule-based, not AI.
-
-## CV blurb (copy-ready)
-Built CullSec, a local vulnerability triage platform: six scanner imports merged into one ranked triage, deterministic contextual scoring with per-finding breakdowns, remediation board and scan comparison, and Markdown/CSV/JSON exports, using TypeScript, Node.js, and SQLite.
-
-## Timed 2-minute demo script
-0:00 Sign in and show the dashboard. 0:20 Upload a scan and show the ranked list and a 'Why this score?' breakdown. 0:50 Move a finding on the Board to Fixed. 1:10 Compare before and after scans (7 findings to 3). 1:30 Download a Markdown report and the portfolio pack. 1:50 Close: local, deterministic scoring, no external data sent.
-`;
 function exportScan(scanId: number, format: string): { type: string; body: string } {
   const scan: any = db.prepare("SELECT * FROM scans WHERE id=?").get(scanId);
   if (!scan) return { type: "text/plain", body: "Scan not found" };
@@ -237,10 +223,6 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
       const out = exportScan(Number(exportMatch[1]), format);
       res.writeHead(200, { "Content-Type": out.type, "Content-Disposition": `attachment; filename="report.${format === "md" ? "md" : format}"` });
       res.end(out.body); return;
-    }
-    if (path === "/api/portfolio" && req.method === "GET") {
-      res.writeHead(200, { "Content-Type": "text/markdown", "Content-Disposition": 'attachment; filename="portfolio-pack.md"' });
-      res.end(PORTFOLIO_MD); return;
     }
     send(res, 404, { ok: false, error: "Not found." });
   } catch (e: any) {

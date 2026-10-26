@@ -374,3 +374,9 @@ html[data-theme="dark"] .si-kicker{color:#4fc08a}
 @media (max-width:900px){.walk-steps{grid-template-columns:1fr 1fr}.overview-grid{grid-template-columns:1fr}}
 @media (max-width:600px){.walk-steps{grid-template-columns:1fr}.si-overview-head{padding:20px}}
 #themePill[hidden]{display:none}
+.scanner-picker{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0}
+.scanner-picker label{border:1px solid var(--border);background:var(--surface-2);border-radius:999px;padding:8px 14px;font-weight:700;cursor:pointer}
+.scanner-picker input{margin-right:6px}
+.upload-card[hidden]{display:none}
+.why-answer{margin-top:12px}
+.why-answer:empty{display:none}

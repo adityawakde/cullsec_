@@ -38,13 +38,6 @@ function auth(req: IncomingMessage): Account | null {
   const row: any = db.prepare("SELECT a.* FROM sessions s JOIN accounts a ON a.id=s.account_id WHERE s.token=?").get(token);
   return row ?? null;
 }
-function masked(v: string): string {
-  if (!v) return "";
-  return "••••" + v.slice(-4);
-}
-function hashSecret(v: string): string {
-  return createHash("sha256").update(v).digest("hex");
-}
 function findingsForScan(scanId: number): any[] {
   const rows: any[] = db.prepare("SELECT * FROM findings WHERE scan_id=? ORDER BY score DESC, id ASC").all(scanId) as any[];
   return rows.map((r) => ({ ...r, breakdown: JSON.parse(r.breakdown) }));
@@ -126,16 +119,16 @@ function createFictionalScan(accountId: number, name: string, kind: "before" | "
 const PORTFOLIO_MD = `# CullSec — Portfolio Pack
 
 ## Architecture
-CullSec is a local TypeScript fullstack app: a static frontend (HTML/CSS/JavaScript) served by a Node.js TypeScript backend, with a file-backed SQLite database (data/cullsec.db). Sign-in, scans, findings, workflow status, settings hints, and scoring breakdowns are stored in SQLite. No data is sent to external services by this app.
+CullSec is a local TypeScript fullstack app: a static frontend (HTML/CSS/JavaScript) served by a Node.js TypeScript backend, with a file-backed SQLite database (data/cullsec.db). Sign-in, scans, findings, workflow status, and scoring breakdowns are stored in SQLite. No data is sent to external services by this app.
 
 ## README (short)
-CullSec turns raw scanner output into a prioritised fix list. Upload Nmap, Nessus, OpenVAS, ZAP, Burp, or Qualys output, get one ranked triage with contextual scoring, move findings on a board, compare scans, and export Markdown, CSV, or JSON. Scoring is deterministic and rule-based, not AI. Tickets and alerts are generators until tokens are connected in Settings.
+CullSec turns raw scanner output into a prioritised fix list. Upload Nmap, Nessus, OpenVAS, ZAP, Burp, or Qualys output, get one ranked triage with contextual scoring, move findings on a board, compare scans, and export Markdown, CSV, or JSON. Scoring is deterministic and rule-based, not AI.
 
 ## CV blurb (copy-ready)
 Built CullSec, a local vulnerability triage platform: six scanner imports merged into one ranked triage, deterministic contextual scoring with per-finding breakdowns, remediation board and scan comparison, and Markdown/CSV/JSON exports, using TypeScript, Node.js, and SQLite.
 
 ## Timed 2-minute demo script
-0:00 Sign in and show the dashboard. 0:20 Upload a scan and show the ranked list and a 'Why this score?' breakdown. 0:50 Move a finding on the Board to Fixed. 1:10 Compare before and after scans (7 findings to 3). 1:30 Show a ticket generator preview and an export. 1:50 Close: local, deterministic scoring, no external data sent.
+0:00 Sign in and show the dashboard. 0:20 Upload a scan and show the ranked list and a 'Why this score?' breakdown. 0:50 Move a finding on the Board to Fixed. 1:10 Compare before and after scans (7 findings to 3). 1:30 Download a Markdown report and the portfolio pack. 1:50 Close: local, deterministic scoring, no external data sent.
 `;
 function exportScan(scanId: number, format: string): { type: string; body: string } {
   const scan: any = db.prepare("SELECT * FROM scans WHERE id=?").get(scanId);
@@ -237,22 +230,6 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
       if (!["before", "after", "scanners"].includes(kind)) { send(res, 400, { ok: false, error: "Unknown demo pack." }); return; }
       const id = createFictionalScan(account.id, `Demo ${kind}`, kind);
       send(res, 200, { ok: true, scanId: id, fictional: true, findings: findingsForScan(id) }); return;
-    }
-    if (path === "/api/settings" && req.method === "GET") {
-      const rows: any[] = db.prepare("SELECT provider, site, project, repo, secret_hint FROM settings WHERE account_id=?").all(account.id) as any[];
-      send(res, 200, { ok: true, settings: rows }); return;
-    }
-    if (path === "/api/settings" && req.method === "POST") {
-      const b = await body(req);
-      const providers = ["jira", "github", "slack", "teams", "model"];
-      for (const p of providers) {
-        const v = b[p];
-        if (!v) continue;
-        const secret = String(v.secret || "");
-        db.prepare("INSERT INTO settings (account_id, provider, site, project, repo, secret_hint, secret_hash) VALUES (?, ?, ?, ?, ?, ?, ?) ON CONFLICT(account_id, provider) DO UPDATE SET site=excluded.site, project=excluded.project, repo=excluded.repo, secret_hint=excluded.secret_hint, secret_hash=excluded.secret_hash")
-          .run(account.id, p, String(v.site || ""), String(v.project || ""), String(v.repo || ""), secret ? masked(secret) : "", secret ? hashSecret(secret) : "");
-      }
-      send(res, 200, { ok: true, note: "Secrets are hashed server-side; only a masked last-4 hint is returned. Nothing is sent anywhere." }); return;
     }
     const exportMatch = path.match(/^\/api\/export\/(\d+)$/);
     if (exportMatch && req.method === "GET") {

@@ -97,9 +97,9 @@
       <span class="so-dot" aria-hidden="true"></span>
       <p class="so-chapter-eyebrow green">CHAPTER 03 &nbsp;·&nbsp; THE FIX</p>
       <h2>Work from the top. Track every step.</h2>
-      <p>Each finding explains in plain language why it matters and exactly how to fix it, then moves through Open → In progress → Fixed on your board — with Jira tickets, GitHub issues and Slack or Teams alerts generated from the same scan.</p>
+      <p>Each finding explains in plain language why it matters and exactly how to fix it, then moves through Open → In progress → Fixed on your board — and exports as Markdown, CSV or JSON.</p>
       <p class="so-flow"><span class="so-pill red-pill">Open</span> &nbsp;→&nbsp; <span class="so-pill amber-pill">In progress</span> &nbsp;→&nbsp; <span class="so-pill green-pill">Fixed</span></p>
-      <p>Plus: Jira CSV · GitHub issues pack · Slack &amp; Teams alerts — generated from the scan.</p>
+      <p>Plus: exports and a portfolio pack — all from the same scan.</p>
     </article>
     <article class="so-chapter">
       <span class="so-dot" aria-hidden="true"></span>
@@ -142,11 +142,18 @@
   </section>
 
   <section class="so-walkthrough">
-    <div class="so-walk-head"><h2>Reviewer walkthrough — no sign-in needed to read this</h2><span class="so-fictional">FICTIONAL DATA ONLY</span></div>
-    <p>CullSec itself is private, so a reviewer cannot click into your saved scans. This walkthrough shows exactly what they will see live, using fictional lab hosts (10.0.5.x) — nothing here is a real scan, and nothing is saved. For the hands-on version, sign in and load the reviewer demo in Settings.</p>
+    <div class="so-walk-head"><h2>Walkthrough — see CullSec work, in 2 minutes</h2><span class="so-fictional">FICTIONAL DATA ONLY</span></div>
+    <p>Read this without signing in. Every host below is fictional lab data (10.0.5.x) — nothing here is a real scan, and nothing is saved. To try it hands-on, sign in and load the reviewer demo in Settings.</p>
     <button id="walkthroughBtn" type="button">Show the 2-minute walkthrough</button>
     <div id="walkthroughPanel" hidden>
-      <p><strong>2 minutes, fictional data only:</strong> 1) A messy scan finishes. 2) CullSec ranks it — Telnet first. 3) The fix moves Open → In progress → Fixed on the board. 4) A re-scan compares before and after. 5) The report downloads as Markdown, CSV or JSON. Nothing here is saved.</p>
+      <div class="walk-steps">
+        <article class="walk-step"><span class="walk-num">01</span><h3>Upload a messy scan</h3><p>A Nmap + Qualys scan finishes for lab hosts 10.0.5.10–30. Seven findings, no agent, no new scanner — just the files your scanners already produced.</p><p class="walk-example">10.0.5.10:23 Telnet · 10.0.5.20:3306 MySQL · 10.0.5.30:22 SSH</p></article>
+        <article class="walk-step"><span class="walk-num">02</span><h3>See the risk, ranked</h3><p>CullSec scores every finding 0–100 and sorts it. Telnet lands on top at 100 Critical, exposed databases follow, SSH and HTTPS sit at the bottom — each with its full breakdown.</p><p class="walk-example">Telnet 100 Critical · MySQL 68 High · SSH 13 Low</p></article>
+        <article class="walk-step"><span class="walk-num">03</span><h3>Work the board</h3><p>Pick the top finding and move it Open → In progress → Fixed. The board and the remediation progress update under your account, scan by scan.</p><p class="walk-example">Open → In progress → Fixed · progress 0% → 14%</p></article>
+        <article class="walk-step"><span class="walk-num">04</span><h3>Prove the fix</h3><p>Re-scan and compare before with after. The diff is the proof: what is new, what was resolved, and what is still open.</p><p class="walk-example">Before 7 findings → After 3 · 0 new · 4 resolved · 3 still open</p></article>
+        <article class="walk-step"><span class="walk-num">05</span><h3>Export the proof</h3><p>Download the report as Markdown, CSV or JSON, ending with “Built by ADYREX”, or grab the portfolio pack with the architecture, README and demo script.</p><p class="walk-example">report.md · report.csv · report.json · portfolio-pack.md</p></article>
+      </div>
+      <p class="walk-foot">Total time: 2 minutes · Nothing here is saved · Hands-on version: sign in → Settings → Load reviewer demo (fictional).</p>
     </div>
   </section>
 
@@ -179,8 +186,8 @@
         <article class="so-feature" style="border-top-color:#2a8f7a"><span class="so-feat-icon teal">▦</span><h3>Remediation board</h3><p>A board view groups findings by status so a reviewer can see at a glance what is untouched, what is being fixed, and what is already closed.</p></article>
         <article class="so-feature" style="border-top-color:#6b7fd4"><span class="so-feat-icon purple">⇄</span><h3>Scan comparison</h3><p>Compare any two scans socket-by-socket: what is new, what was resolved, and what is still open — the proof that fixes actually worked.</p></article>
         <article class="so-feature" style="border-top-color:#2a8f7a"><span class="so-feat-icon teal">⊹</span><h3>Host inventory</h3><p>Findings grouped by host show the full exposure of each machine — every open port, service and version in one place.</p></article>
-        <article class="so-feature" style="border-top-color:#8a8a2a"><span class="so-feat-icon olive">✎</span><h3>Score explanations + AI-ready panel</h3><p>Every finding explains why it scored what it scored, factor by factor. An AI explanation panel sits beside it, honestly labelled 'model not connected' until you add your own model key in Settings.</p></article>
-        <article class="so-feature" style="border-top-color:#2f9e6e"><span class="so-feat-icon green">↓</span><h3>Reports, tickets &amp; alerts</h3><p>Download reports as Markdown, CSV and JSON — plus a Jira import CSV and a GitHub issues pack generated per finding, and Slack / Microsoft Teams webhook payloads for critical findings. Live posting unlocks in Settings once you connect your own accounts.</p></article>
+        <article class="so-feature" style="border-top-color:#8a8a2a"><span class="so-feat-icon olive">✎</span><h3>Score explanations</h3><p>Every finding explains why it scored what it scored, factor by factor, with a deterministic breakdown — no AI claim, no black box.</p></article>
+        <article class="so-feature" style="border-top-color:#2f9e6e"><span class="so-feat-icon green">↓</span><h3>Reports &amp; exports</h3><p>Download reports as Markdown, CSV and JSON, plus a portfolio pack with architecture, README, CV blurb and a timed demo script — all from the same scan.</p></article>
         <article class="so-feature" style="border-top-color:#3b82c4"><span class="so-feat-icon blue">⚑</span><h3>Known-bad version detection</h3><p>Fingerprints for dangerous versions — Apache 2.4.49/2.4.50 RCE, vsftpd 2.3.4 backdoor, IIS 6.0, ProFTPD backdoor — add score automatically.</p></article>
         <article class="so-feature" style="border-top-color:#c0392b"><span class="so-feat-icon red">◆</span><h3>Saved accounts &amp; history</h3><p>Sign in once and the account is saved. Every scan, finding and status is stored under your account and waiting when you return.</p></article>
         <article class="so-feature" style="border-top-color:#c9922a"><span class="so-feat-icon amber">⬡</span><h3>Zero-install workflow</h3><p>No Docker stack, no database server to babysit, no agent deployment. Scan in Kali, upload here, get a ranked action plan in seconds.</p></article>
@@ -213,17 +220,14 @@
 </nav>
 <main>
 <section class="tab active" id="tab-overview">
-<div class="si-hero">
-<p class="so-eyebrow">&lt;/&gt; CYBER SECURITY &nbsp;·&nbsp; VULNERABILITY TRIAGE</p>
-<h1 class="so-title">CullSec</h1>
-<p class="so-tagline">Every vulnerability. Ranked. Explained. Fixed.</p>
-<p class="so-lede">CullSec is a cyber security platform — upload scans from Nmap, Nessus, OpenVAS, ZAP, Burp or Qualys and CullSec scores, deduplicates, ranks and tracks every finding until it is fixed — then turns it into tickets and chat alerts.<br>Built by ADYREX.</p>
-<div class="scene" aria-hidden="true"><div class="orb"></div><div class="orb-ring"></div><div class="orb-ring ring2"></div><div class="gridfloor"></div><div class="scene-card"><strong>192.168.1.20:23</strong><small>telnet — cleartext login · BASE 80 → TOP</small></div><div class="scene-tag">BASE SCORES (V2 ADDS CONTEXT)</div></div>
-<div class="so-stats"><div class="so-stat"><b>25+</b><span>SERVICE RISK RULES</span></div><div class="so-stat"><b>8</b><span>KNOWN-BAD VERSION<br>CHECKS</span></div><div class="so-stat"><b>0–100</b><span>RISK SCORING SCALE</span></div><div class="so-stat"><b>6</b><span>SCANNER IMPORTS</span></div></div>
-<p class="so-ticker"><span class="tk-red">● TELNET · BASE 80 · CRITICAL</span> &nbsp; <span class="tk-magenta">● REDIS · BASE 65 · HIGH</span> &nbsp; <span class="tk-amber">● MYSQL · BASE 60 · HIGH</span><br><span class="tk-blue">● FTP · BASE 50 · HIGH</span> &nbsp; <span class="tk-brown">● APACHE 2.4.49 · +20 FLAG</span> &nbsp; <span class="tk-teal">● HTTPS · 15 · LOW</span> &nbsp; <span class="tk-green">● SSH · 10 · LOW</span></p>
+<div class="si-overview-head">
+<p class="si-kicker">OVERVIEW</p>
+<h2>Your risk, at a glance</h2>
+<p class="lede">Every saved scan, ranked and tracked. Start in Triage, work the Board, prove it in Compare.</p>
+<div class="overview-actions"><button type="button" class="primary goto-tab" data-goto="triage">Run a triage →</button><button type="button" class="goto-tab" data-goto="board">Open board</button><button type="button" class="goto-tab" data-goto="compare">Compare scans</button></div>
 </div>
-<div id="overviewEmpty" class="si-empty"><h3>Your executive overview is empty — for now</h3><p>Run your first triage in the Triage tab — try “Load my sample scan” — and this page becomes your portfolio dashboard: severity mix, remediation progress, riskiest hosts and trend.</p></div>
-<div id="overviewDashboard"><div id="stats"></div><div id="scanSummary"></div><div class="card-grid"><div class="panel" style="margin:0"><h3>Riskiest hosts</h3><div id="riskyHosts"></div></div><div class="panel" style="margin:0"><h3>Common services</h3><div id="commonServices"></div></div><div class="panel" style="margin:0"><h3>Host inventory</h3><div id="hostInventory"></div></div></div><div class="panel"><h3>Scan trend</h3><div id="trend"></div></div></div>
+<div id="overviewEmpty" class="si-empty"><h3>Your overview is empty — for now</h3><p>Run your first triage and this page becomes your dashboard: severity mix, remediation progress, riskiest hosts and trend.</p><div class="overview-actions"><button type="button" class="primary goto-tab" data-goto="triage">Go to Triage →</button></div></div>
+<div id="overviewDashboard"><div id="stats"></div><div class="overview-grid"><div id="scanSummary"></div><div class="panel"><h3>Riskiest hosts</h3><div id="riskyHosts"></div></div></div><div class="overview-grid"><div class="panel"><h3>Common services</h3><div id="commonServices"></div></div><div class="panel"><h3>Host inventory</h3><div id="hostInventory"></div></div></div><div class="panel"><h3>Scan trend</h3><div id="trend"></div></div></div>
 </section>
 
 <section class="tab" id="tab-triage"><h2>Triage</h2><p class="lede">Upload scan files. Only scan networks you own or have permission to test.</p>
@@ -242,7 +246,7 @@
 <div class="action-row"><button id="runTriage" type="button" class="primary">Run triage →</button></div>
 <p id="triageStatus"></p></div>
 <div class="panel"><h3>Saved scans</h3><div id="savedScansList"></div><div id="savedScansEmpty" class="si-empty"><h3>No saved scans yet</h3><p>Run your first triage above — try “Load my sample scan” — and it will be saved here under your account.</p></div></div>
-<div class="panel"><h3>AI explanation panel</h3><p><strong>Model not connected.</strong> Scoring is deterministic and rule-based, not AI.</p><div id="aiPanel" class="ai-panel">Select a finding to see its explanation.</div></div>
+<div class="panel"><h3>Score breakdown</h3><p>Scoring is deterministic and rule-based, not AI. Tap “Why this score?” on any finding to see its parts.</p><div id="aiPanel" class="ai-panel">Select a finding to see its breakdown.</div></div>
 <div class="panel"><h3>Findings explorer</h3>
 <div class="filter-bar">
 <label>Search <input type="text" id="searchBox" placeholder="host, service, or issue"></label>
@@ -251,9 +255,7 @@
 <label>Sort <select id="sortSelect"><option value="score-desc">Score high to low</option><option value="score-asc">Score low to high</option><option value="host">Host A-Z</option></select></label>
 </div>
 <div id="findingsList"></div></div>
-<div class="panel"><h3>Tickets &amp; alerts — generators only</h3><p><strong>Generator · live needs your token.</strong> Previews and downloads only. Nothing is created or sent.</p>
-<div class="button-row"><button id="downloadJira" type="button">Download Jira import CSV</button><button id="downloadGithub" type="button">Download GitHub issues pack</button><button id="previewAlerts" type="button">Preview Slack / Teams payloads</button></div>
-<pre id="alertPreview"></pre>
+<div class="panel"><h3>Exports</h3><p>Download the current scan as Markdown, CSV or JSON, or the portfolio pack.</p>
 <div class="button-row"><button id="exportMd" type="button">Download report.md</button><button id="exportCsv" type="button">Download report.csv</button><button id="exportJson" type="button">Download report.json</button><button id="portfolioBtn" type="button">Download portfolio pack</button></div>
 </div></section>
 
@@ -265,16 +267,14 @@
 
 <section class="tab" id="tab-platform"><div class="si-platform"><p class="so-eyebrow">&lt;/&gt; CULLSEC &nbsp;·&nbsp; CYBER SECURITY PLATFORM</p><div id="platformNav" class="so-plat-nav"></div><p class="so-now">NOW VIEWING &nbsp;·&nbsp; <span id="siNowLabel">FEATURES</span></p><div id="platformContent"></div></div></section>
 
-<section class="tab" id="tab-settings"><p class="si-kicker">SETTINGS</p><h2>Connections — generators today, live with your tokens</h2><p class="lede">Everything on this page is buildable without your tokens: targets and status are saved per account, secrets are hashed with only a masked hint kept, and nothing is posted anywhere by this build. When you are ready, save your real token/webhook here (never in chat) and live posting becomes the next switch-on step.</p>
+<section class="tab" id="tab-settings"><p class="si-kicker">SETTINGS</p><h2>Settings — only what works</h2><p class="lede">Your account, appearance and demo data. CullSec sends nothing anywhere, and stores everything in one local SQLite file.</p>
 <div class="si-settings-grid">
-<div class="panel"><div class="si-set-head"><h3>Jira</h3><span class="si-badge">NOT CONFIGURED — GENERATOR ONLY</span></div><p>Generator today: Jira CSV per scan. Live creation needs your site + project + token saved here.</p><label><input type="checkbox" id="setJiraEnable"> Enable connection settings</label><label>Jira site URL <input type="text" id="setJiraSite" placeholder="https://your-team.atlassian.net"></label><label>Project key (e.g. SEC) <input type="text" id="setJiraProject" placeholder="SEC"></label><label>Jira API token <input type="password" id="setJiraSecret" placeholder="Paste only when you are ready to connect"></label><p class="si-note">Do not paste secrets in chat. Enter them only here, in your private app. This build stores a hash + last-4 hint only and makes no outbound call with it.</p><div class="action-row"><button id="saveJira" type="button" class="primary">Save Jira settings</button><button id="disconnectJira" type="button">Disconnect</button></div><p class="si-note">Test / preview: use the payload preview on any scan — no live send in this build</p></div>
-<div class="panel"><div class="si-set-head"><h3>GitHub</h3><span class="si-badge">NOT CONFIGURED — GENERATOR ONLY</span></div><p>Generator today: issues pack (.md). Live creation needs your repo + token saved here.</p><label><input type="checkbox" id="setGithubEnable"> Enable connection settings</label><label>Repository (owner/repo) <input type="text" id="setGithubRepo" placeholder="owner/repo"></label><label>GitHub token (issues:write) <input type="password" id="setGithubSecret" placeholder="Paste only when you are ready to connect"></label><p class="si-note">Do not paste secrets in chat. Enter them only here, in your private app. This build stores a hash + last-4 hint only and makes no outbound call with it.</p><div class="action-row"><button id="saveGithub" type="button" class="primary">Save GitHub settings</button><button id="disconnectGithub" type="button">Disconnect</button></div><p class="si-note">Test / preview: use the payload preview on any scan — no live send in this build</p></div>
-<div class="panel"><div class="si-set-head"><h3>Slack</h3><span class="si-badge">NOT CONFIGURED — GENERATOR ONLY</span></div><p>Generator today: webhook payload JSON. Live posting needs your webhook saved here — paste the payload to test manually first.</p><label><input type="checkbox" id="setSlackEnable"> Enable connection settings</label><label>Channel or webhook name <input type="text" id="setSlackChannel" placeholder="#security-alerts"></label><label>Slack Incoming Webhook URL <input type="password" id="setSlack" placeholder="Paste only when you are ready to connect"></label><p class="si-note">Do not paste secrets in chat. Enter them only here, in your private app. This build stores a hash + last-4 hint only and makes no outbound call with it.</p><div class="action-row"><button id="saveSlack" type="button" class="primary">Save Slack settings</button><button id="disconnectSlack" type="button">Disconnect</button></div><p class="si-note">Test / preview: use the payload preview on any scan — no live send in this build</p></div>
-<div class="panel"><div class="si-set-head"><h3>Microsoft Teams</h3><span class="si-badge">NOT CONFIGURED — GENERATOR ONLY</span></div><p>Generator today: MessageCard payload JSON. Live posting needs your webhook saved here.</p><label><input type="checkbox" id="setTeamsEnable"> Enable connection settings</label><label>Channel name <input type="text" id="setTeamsChannel" placeholder="Security alerts"></label><label>Teams Incoming Webhook URL <input type="password" id="setTeams" placeholder="Paste only when you are ready to connect"></label><p class="si-note">Do not paste secrets in chat. Enter them only here, in your private app. This build stores a hash + last-4 hint only and makes no outbound call with it.</p><div class="action-row"><button id="saveTeams" type="button" class="primary">Save Microsoft Teams settings</button><button id="disconnectTeams" type="button">Disconnect</button></div><p class="si-note">Test / preview: use the payload preview on any scan — no live send in this build</p></div>
-<div class="panel"><div class="si-set-head"><h3>AI model</h3><span class="si-badge">NOT CONFIGURED — GENERATOR ONLY</span></div><p>Slot only in this build: save a key hint here and findings will show 'key saved'. No scan data is sent to any model by this build — live AI explanations need that connection step.</p><label><input type="checkbox" id="setModelEnable"> Enable connection settings</label><label>Model / provider name <input type="text" id="setModelName" placeholder="e.g. My model connection"></label><label>Model API key / token <input type="password" id="setModel" placeholder="Paste only when you are ready to connect"></label><p class="si-note">Do not paste secrets in chat. Enter them only here, in your private app. This build stores a hash + last-4 hint only and makes no outbound call with it.</p><div class="action-row"><button id="saveModel" type="button" class="primary">Save AI model settings</button><button id="disconnectModel" type="button">Disconnect</button></div><p class="si-note">Test / preview: use the payload preview on any scan — no live send in this build</p></div>
+<div class="panel"><h3>Your account</h3><p>Signed in as <strong id="settingsAccount">your account</strong>. Use Edit profile in the top bar to change your display name, or Sign out there.</p><p>Your scans, findings and board status are saved under your account, and waiting when you return.</p></div>
+<div class="panel"><h3>Appearance</h3><p>Light or Dark is in the top bar. Your choice is saved on this device, and a first visit follows your system setting.</p></div>
+<div class="panel"><h3>Security &amp; privacy</h3><p>Passwords are hashed server-side with scrypt and a per-account salt, never stored in plain text. Scan data lives in data/cullsec.db on this machine. This app makes no outbound call with your scan data.</p></div>
+<div class="panel"><h3>Reviewer demo data (fictional)</h3><p>Load two fictional DEMO scans — “before fixes” (7 findings) and “after fixes” (3 findings) — so a reviewer can run the full story (rank → board → compare) in two minutes without any real network. Hosts are 10.0.5.x lab fiction. Loading twice does nothing — the demo is created once per account.</p><button id="reviewerDemoBtn" type="button" class="primary">Load reviewer demo (fictional)</button></div>
+<div class="panel"><h3>Your data</h3><p>Delete a single scan in Triage → Saved scans. To reset everything local, stop the server and delete data/cullsec.db, then start it again.</p></div>
 </div>
-<p id="settingsStatus"></p><div id="settingsSaved"></div>
-<div class="panel"><h3>Reviewer demo data (fictional)</h3><p>Load two fictional DEMO scans — “before fixes” (7 findings across Nmap + Qualys-style data) and “after fixes” (3 findings) — so a reviewer can run the full story (rank → board → compare) in two minutes without any real network. Hosts are 10.0.5.x lab fiction. Loading twice does nothing — the demo is created once per account.</p><button id="reviewerDemoBtn" type="button" class="primary">Load reviewer demo (fictional)</button></div>
 </section>
 </main></div>
 <footer id="globalFooter" hidden>CullSec · Built by ADYREX</footer>
